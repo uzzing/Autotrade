@@ -55,6 +55,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // order
+        Button btn_order = findViewById(R.id.btn_order);
+        btn_order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AutoTrade autoTrade = new AutoTrade();
+                try {
+                    autoTrade.buyMarketOrder("KRW-BTC", 6000);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         // get current
         Button btn_getCurrent = findViewById(R.id.btn_getCurrent);
         btn_getCurrent.setOnClickListener(new View.OnClickListener() {
