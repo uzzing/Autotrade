@@ -3,8 +3,12 @@ package com.project.autotrade;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import cz.msebera.android.httpclient.HttpEntity;
@@ -16,6 +20,8 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 
 public class Client {
 
@@ -45,11 +51,24 @@ public class Client {
 
     public HttpEntity postEntity(HashMap<String, String> params) throws IOException, NoSuchAlgorithmException {
 
-        String jwtToken = Jwts.builder()
-                .claim("access_key", accessKey)
-                .claim("nonce", UUID.randomUUID().toString())
-                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
-                .compact();
+        ArrayList<String> queryElements = new ArrayList<>();
+        for(Map.Entry<String, String> entity : params.entrySet()) {
+            queryElements.add(entity.getKey() + "=" + entity.getValue());
+        }
+
+        String queryString = String.join("&", queryElements.toArray(new String[0]));
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(queryString.getBytes("UTF-8"));
+
+        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        String jwtToken = JWT.create()
+                .withClaim("access_key", accessKey)
+                .withClaim("nonce", UUID.randomUUID().toString())
+                .withClaim("query_hash", queryHash)
+                .withClaim("query_hash_alg", "SHA512")
+                .sign(algorithm);
 
         String authenticationToken = "Bearer " + jwtToken;
 
@@ -63,4 +82,6 @@ public class Client {
         HttpEntity entity = response.getEntity();
         return entity;
     }
+
+
 }

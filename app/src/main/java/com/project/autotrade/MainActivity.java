@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.material.internal.NavigationSubMenu;
-import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,17 +34,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //조회버튼
-        Button btn_search = findViewById(R.id.btn_search);
-        btn_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                task = new BackgroundTask();
-                task.execute(); //반복시작
-            }
-        });
+//        // 조회버튼
+//        Button btn_search = findViewById(R.id.btn_search);
+//        btn_search.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                task = new BackgroundTask();
+//                task.execute(); //반복시작
+//            }
+//        });
 
-        //취소버튼
+        // 취소버튼
         Button btn_cancel = findViewById(R.id.btn_cancel);
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,14 +58,15 @@ public class MainActivity extends AppCompatActivity {
         btn_order.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AutoTrade autoTrade = new AutoTrade();
-                try {
-                    autoTrade.buyMarketOrder("KRW-BTC", 6000);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                }
+                //AutoTrade autoTrade = new AutoTrade();
+                //try {
+                    task = new BackgroundTask();
+                    task.execute();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (NoSuchAlgorithmException e) {
+//                    e.printStackTrace();
+//                }
             }
         });
 
@@ -82,45 +81,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void getAccounts() throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        try {
-            // http client
-            Client client = new Client();
-
-            //1. 데이터 담기
-            String data =  EntityUtils.toString(client.getEntity());
-
-            String currency      = ""; //화폐 종류
-            String balance       = "";//주문가능 금액/수량
-            String locked        = ""; //주문 중 묶여있는 금액
-            String avg_buy_price = ""; //매수 평균가
-
-            //2. 데이터를 배열에 담기
-            JSONArray jsonArray = new JSONArray(data);
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-
-                //3. 배열에 있는 오브젝트를 오브젝트에 담기
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                //4. 오브젝트에 있는 데이터를 key값으로 불러오기
-                currency      = jsonObject.get("currency").toString();//화폐 종류
-                balance       = jsonObject.get("balance").toString();//주문가능 금액&수량
-                locked        = jsonObject.get("locked").toString();//주문 중 묶여있는 금액&수량
-                avg_buy_price = jsonObject.get("avg_buy_price").toString();//매수 평균가
-
-                Log.d(TAG, "화폐종류: " + currency);
-                Log.d(TAG, "주문가능 금액&수량: " + balance);
-                Log.d(TAG, "주문 중 묶여있는 금액&수량: " + locked);
-                Log.d(TAG, "매수 평균가: " + avg_buy_price);
-            }
-
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-
     class BackgroundTask extends AsyncTask<Integer, String, Integer>
     {
         @Override
@@ -131,9 +91,10 @@ public class MainActivity extends AppCompatActivity {
         protected Integer doInBackground(Integer... values) {
 
             //정지 시킬때까지 반복
-            while (!isCancelled()) {
+            //while (!isCancelled()) {
+                AutoTrade autoTrade = new AutoTrade();
                 try {
-                    getAccounts();
+                    autoTrade.autotrade();
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
@@ -141,8 +102,10 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } //while
+            //} //while
 
             return value;
         }

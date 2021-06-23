@@ -1,12 +1,12 @@
 package com.project.autotrade;
 
-import android.os.AsyncTask;
-import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
-
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -27,6 +27,8 @@ public class AutoTrade {
     double askPrice;
     double bidPrice;
 
+    public static double currentPrice;
+
     AutoTrade() {};
 
     AutoTrade(String lowPrice, String highPrice, String tradePrice) {
@@ -40,32 +42,61 @@ public class AutoTrade {
         this.bidPrice = bidPrice;
     }
 
+    private void getOrderBooks(String coinNm) {
+
+        //final String sCoinNm = coinNm;
+        final String sCoinNm = "XRP";
+
+        String url = "https://api.upbit.com/v1/orderbook?markets=KRW-" + sCoinNm;
+
+        StringRequest request = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        currentPrice = new GetJson().getCurrentPrice(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse: " + error.getMessage());
+                    }
+                }){
+        };
+        request.setShouldCache(false);
+        requestQueue.add(request);
+    } //getOrderBooks
+
     public void autotrade() throws IOException, NoSuchAlgorithmException {
         LocalDateTime now = LocalDateTime.now().withNano(0); // remove miliseconds ("HH:ss:mm")
         LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(9,0,0));
         LocalDateTime endTime = startTime.plusDays(1).with(LocalTime.of(8,59,50));
 
-        if (startTime.isBefore(now) && endTime.isAfter(now)) {
+        if (!(startTime.isBefore(now) && endTime.isAfter(now))) {
             double targetPrice = getTargetPrice();
-            double currentPrice = getCurrentPrice();
+            //double currentPrice = getCurrentPrice();
+            System.out.println(targetPrice);
+            System.out.println(currentPrice);
 
             if (targetPrice < currentPrice) {
-                double krw = new getJson().getBalance("KRW");
+                //double krw = new getJson().getBalance("KRW");
+                System.out.println("buy");
+                double krw = 6000;
                 if (krw > 5000) buyMarketOrder("KRW-BTC", krw * 0.9995);
             }
             else {
-                double btc = new getJson().getBalance("BTC");
-                // if (btc > 0.00008)
+                System.out.println("sell");
+                double currencyBalance = new GetJson().getBalance("KRW-BTC");
+                if (currencyBalance > 0.00008) sellMarketOrder("KRW-BTC", currencyBalance * 0.9995);
             }
         }
-
     }
 
-    private double getTargetPrice() {
-        return tradePrice + (highPrice - lowPrice) * 0.3;
+    public double getTargetPrice() {
+        return tradePrice + (highPrice - lowPrice) * 0.1;
     }
 
-    private double getCurrentPrice() {
+    public double getCurrentPrice(double askPrice, double bidPrice) {
         return (askPrice + bidPrice) / 2;
     }
 
@@ -73,8 +104,20 @@ public class AutoTrade {
         HashMap<String, String> params = new HashMap<>();
         params.put("market", coinNm);
         params.put("side", "bid"); // buy
-        params.put("price", "price");
+        params.put("price", Double.toString(price));
         params.put("ord_type", "price");
+
+        Client client = new Client();
+        String data = EntityUtils.toString(client.postEntity(params));
+        Log.d(TAG, data);
+    }
+
+    public void sellMarketOrder(String coinNm, double price) throws IOException, NoSuchAlgorithmException {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("market", coinNm);
+        params.put("side", "ask"); // sell
+        params.put("volume", Double.toString(price));
+        params.put("ord_type", "market");
 
         Client client = new Client();
         String data = EntityUtils.toString(client.postEntity(params));
