@@ -46,7 +46,7 @@ public class getJson {
         };
         request.setShouldCache(false);
         requestQueue.add(request);
-    } //getOrderBooks
+    } //getOrderBookss
 
     // currentPrice
     private void getCurrentPrice(String data) {
