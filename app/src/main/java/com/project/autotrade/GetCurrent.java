@@ -70,7 +70,7 @@ public class GetCurrent extends AppCompatActivity {
         }
     } //onCreate()
 
-    public void getTicker(String coinNm) {
+    public void getTickerData(String coinNm) {
 
         final String coinName = coinNm;
 
@@ -80,7 +80,7 @@ public class GetCurrent extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         //조회
-                        getTickerData(response);
+                        getTicker(response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -94,7 +94,7 @@ public class GetCurrent extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    public void getTickerData(String data) {
+    public void getTicker(String data) {
 
         try {
             JSONArray jsonArray = new JSONArray(data);
@@ -109,8 +109,6 @@ public class GetCurrent extends AppCompatActivity {
                 String sPrev_closing_price = jsonObject.get("prev_closing_price").toString();//전일종가
                 String sAcc_trade_price_24h = jsonObject.get("acc_trade_price_24h").toString();//24시간 누적거래대금
                 String sAcc_trade_volume_24h = jsonObject.get("acc_trade_volume_24h").toString();//24시간 누적거래량
-
-                new AutoTrade(sHigh_price, sLow_price, sTrade_price);
 
                 //텍스트뷰에 데이터 담기
                 opening_price.setText(toDoubleFormat(Double.parseDouble(sOpening_price)));

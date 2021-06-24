@@ -17,87 +17,42 @@ import java.util.HashMap;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class AutoTrade {
-    private RequestQueue requestQueue;
+
     private static final String TAG = "Main";
 
-    int lowPrice;
-    int highPrice;
-    int tradePrice;
-
-    double askPrice;
-    double bidPrice;
-
-    public static double currentPrice;
-
-    AutoTrade() {};
-
-    AutoTrade(String lowPrice, String highPrice, String tradePrice) {
-        this.lowPrice = Integer.parseInt(lowPrice);
-        this.highPrice = Integer.parseInt(highPrice);
-        this.tradePrice = Integer.parseInt(tradePrice);
-    }
-
-    AutoTrade(double askPrice, double bidPrice) {
-        this.askPrice = askPrice;
-        this.bidPrice = bidPrice;
-    }
-
-    private void getOrderBooks(String coinNm) {
-
-        //final String sCoinNm = coinNm;
-        final String sCoinNm = "XRP";
-
-        String url = "https://api.upbit.com/v1/orderbook?markets=KRW-" + sCoinNm;
-
-        StringRequest request = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        currentPrice = new GetJson().getCurrentPrice(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "onErrorResponse: " + error.getMessage());
-                    }
-                }){
-        };
-        request.setShouldCache(false);
-        requestQueue.add(request);
-    } //getOrderBooks
-
     public void autotrade() throws IOException, NoSuchAlgorithmException {
+
         LocalDateTime now = LocalDateTime.now().withNano(0); // remove miliseconds ("HH:ss:mm")
-        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(9,0,0));
-        LocalDateTime endTime = startTime.plusDays(1).with(LocalTime.of(8,59,50));
+        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(9, 0, 0));
+        LocalDateTime endTime = startTime.plusDays(1).with(LocalTime.of(8, 59, 50));
 
         if (!(startTime.isBefore(now) && endTime.isAfter(now))) {
-            double targetPrice = getTargetPrice();
-            //double currentPrice = getCurrentPrice();
-            System.out.println(targetPrice);
-            System.out.println(currentPrice);
+            String targetPrice = GetJson.targetPrice;
+            String currentPrice = GetJson.currentPrice;
 
-            if (targetPrice < currentPrice) {
-                //double krw = new getJson().getBalance("KRW");
-                System.out.println("buy");
-                double krw = 6000;
-                if (krw > 5000) buyMarketOrder("KRW-BTC", krw * 0.9995);
-            }
-            else {
-                System.out.println("sell");
-                double currencyBalance = new GetJson().getBalance("KRW-BTC");
-                if (currencyBalance > 0.00008) sellMarketOrder("KRW-BTC", currencyBalance * 0.9995);
+            try {
+                // test
+                if (targetPrice == null && currentPrice == null) {
+                    System.out.println("종료합니다");
+                }
+
+                if (Integer.parseInt(targetPrice) < Integer.parseInt(currentPrice)) {
+                    Log.d(TAG, "buy");
+                    //double krw = new getJson().getBalance("KRW");
+                    //double krw = 6000;
+                    //if (krw > 5000) buyMarketOrder("KRW-BTC", krw * 0.9995);
+                } else {
+                    Log.d(TAG, "sell");
+                    double currencyBalance = new GetJson().getBalance("KRW-BTC");
+                    if (currencyBalance > 0.00008)
+                        sellMarketOrder("KRW-BTC", currencyBalance * 0.9995);
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
         }
-    }
-
-    public double getTargetPrice() {
-        return tradePrice + (highPrice - lowPrice) * 0.1;
-    }
-
-    public double getCurrentPrice(double askPrice, double bidPrice) {
-        return (askPrice + bidPrice) / 2;
     }
 
     public void buyMarketOrder(String coinNm, double price) throws IOException, NoSuchAlgorithmException {

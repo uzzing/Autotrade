@@ -2,12 +2,6 @@ package com.project.autotrade;
 
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,43 +9,20 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.text.DecimalFormat;
+import java.security.PrivateKey;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class GetJson {
-    private RequestQueue requestQueue;
+
     private static final String TAG = "Main";
 
-    private void getOrderBooks(String coinNm) {
+    public static String currentPrice;
+    public static String targetPrice;
 
-        //final String sCoinNm = coinNm;
-        final String sCoinNm = "DOGE";
-
-        String url = "https://api.upbit.com/v1/orderbook?markets=KRW-" + sCoinNm;
-
-        StringRequest request = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        getCurrentPrice(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "onErrorResponse: " + error.getMessage());
-                    }
-                }){
-        };
-        request.setShouldCache(false);
-        requestQueue.add(request);
-    } //getOrderBooks
-
-    // currentPrice
-    public double getCurrentPrice(String data) {
-        ArrayList<OrderBookVo> items = new ArrayList<>();
+    public void getCurrentPrice(String data) {
 
         try {
             JSONArray jsonArray = new JSONArray(data);
@@ -85,22 +56,18 @@ public class GetJson {
                 arr_bid_price.add(Double.parseDouble(bid_price));
             }
 
-            // 매도 담기 : 0
-            double askPrice = arr_ask_price.get(0);
+            NumberFormat format = NumberFormat.getInstance();
+            format.setGroupingUsed(false);
 
-            // 매수 담기 : arr_bid_price.size() - 1
-            double bidPrice = arr_bid_price.get(arr_ask_price.size() - 1);
-
-            double currentPrice = (askPrice + bidPrice) / 2;
-            return currentPrice;
+            currentPrice = format.format((arr_ask_price.get(0) + arr_bid_price.get(0)) / 2);
+            System.out.println(currentPrice);
 
         } catch (JSONException e) {
             e.printStackTrace();
-            return 0;
         }
-    } //getCurrentPrice
+    } // getCurrentPrice
 
-    public void getTickerData(String data) {
+    public void getTargetPrice(String data) {
 
         try {
             JSONArray jsonArray = new JSONArray(data);
@@ -108,16 +75,21 @@ public class GetJson {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                String sOpening_price = jsonObject.get("opening_price").toString();//시가
                 String sHigh_price = jsonObject.get("high_price").toString();//고가
                 String sLow_price = jsonObject.get("low_price").toString();//저가
                 String sTrade_price = jsonObject.get("trade_price").toString();//종가
-                String sPrev_closing_price = jsonObject.get("prev_closing_price").toString();//전일종가
-                String sAcc_trade_price_24h = jsonObject.get("acc_trade_price_24h").toString();//24시간 누적거래대금
-                String sAcc_trade_volume_24h = jsonObject.get("acc_trade_volume_24h").toString();//24시간 누적거래량
 
-                new AutoTrade(sHigh_price, sLow_price, sTrade_price);
+                double highPrice = Double.parseDouble(sHigh_price);
+                double lowPrice = Double.parseDouble(sLow_price);
+                double tradePrice = Double.parseDouble(sTrade_price);
+
+                NumberFormat format = NumberFormat.getInstance();
+                format.setGroupingUsed(false);
+
+                targetPrice = format.format(tradePrice + (highPrice - lowPrice) * 0.1);
+                System.out.println(targetPrice);
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -195,23 +167,4 @@ public class GetJson {
             e.printStackTrace();
         }
     }
-
-    public String toDoubleFormat(Double num) {
-
-        DecimalFormat df = null;
-
-        if(num >= 100 && num <= 999.9){
-            df = new DecimalFormat("000.0");
-        }else if(num >= 10 && num <= 99.99){
-            df = new DecimalFormat("00.00");
-        }else if(num >= 1 && num <= 9.9999){
-            df = new DecimalFormat("0.000");
-        }else if(num < 1){
-            df = new DecimalFormat("0.0000");
-        }else{
-            df = new DecimalFormat("###,###,###");
-        }
-        return df.format(num);
-    } // toDoubleFormat
-
 }
