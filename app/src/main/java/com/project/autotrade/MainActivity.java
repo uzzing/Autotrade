@@ -19,6 +19,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -168,6 +172,26 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled() {
+        }
+    }
+
+    // Thread that used in BackgroundTask.class
+    class AutoTradeThread implements Runnable {
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    Thread.sleep(1000);
+                    LocalDateTime now = LocalDateTime.now().withNano(0);
+                    autoTrade.autotrade(coinNm, currentPrice, targetPrice, now);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
