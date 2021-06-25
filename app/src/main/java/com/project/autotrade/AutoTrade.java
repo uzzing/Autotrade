@@ -2,12 +2,6 @@ package com.project.autotrade;
 
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -20,42 +14,50 @@ public class AutoTrade {
 
     private static final String TAG = "Main";
 
-    public void autotrade() throws IOException, NoSuchAlgorithmException {
+    public void autotrade(String coinNm, String currentPrice, String targetPrice, LocalDateTime now) throws IOException, NoSuchAlgorithmException, InterruptedException {
 
-        LocalDateTime now = LocalDateTime.now().withNano(0); // remove miliseconds ("HH:ss:mm")
-        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(9, 0, 0));
-        LocalDateTime endTime = startTime.plusDays(1).with(LocalTime.of(8, 59, 50));
+//        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(9, 0, 0));
+//        LocalDateTime endTime = startTime.plusDays(1).with(LocalTime.of(8, 59, 50));
+        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(0, 0, 0));
+        LocalDateTime endTime = LocalDateTime.now().with(LocalTime.of(1, 47, 0));
 
-        if (!(startTime.isBefore(now) && endTime.isAfter(now))) {
-            String targetPrice = GetJson.targetPrice;
-            String currentPrice = GetJson.currentPrice;
+        System.out.println(coinNm);
+        System.out.println(now);
+        System.out.println(currentPrice);
+        System.out.println(targetPrice);
 
-            try {
-                // test
-                if (targetPrice == null && currentPrice == null) {
-                    System.out.println("종료합니다");
-                }
-
+        try {
+            if (startTime.isBefore(now) && endTime.isAfter(now)) {
                 if (Integer.parseInt(targetPrice) < Integer.parseInt(currentPrice)) {
                     Log.d(TAG, "buy");
-                    //double krw = new getJson().getBalance("KRW");
-                    //double krw = 6000;
-                    //if (krw > 5000) buyMarketOrder("KRW-BTC", krw * 0.9995);
-                } else {
-                    Log.d(TAG, "sell");
-                    double currencyBalance = new GetJson().getBalance("KRW-BTC");
-                    if (currencyBalance > 0.00008)
-                        sellMarketOrder("KRW-BTC", currencyBalance * 0.9995);
+
+                    String strKrw = new GetJson().getBalance("KRW");
+                    double krw = Double.parseDouble(strKrw);
+
+                    if (krw > 5000)
+                        buyMarketOrder("KRW-" + coinNm, krw * 0.9995);
                 }
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e) {
-                e.printStackTrace();
             }
+            else {
+                Log.d(TAG, "sell");
+
+                String strCurrencyBalance = new GetJson().getBalance(coinNm);
+                double currencyBalance = Double.parseDouble(strCurrencyBalance);
+
+                if (currencyBalance > 0.00008)
+                    sellMarketOrder("KRW-" + coinNm, currencyBalance * 0.9995);
+
+                MainActivity.task.cancel(true);
+            }
+        } catch(NumberFormatException e){
+            e.printStackTrace();
+        } catch(NullPointerException e){
+            e.printStackTrace();
         }
     }
 
-    public void buyMarketOrder(String coinNm, double price) throws IOException, NoSuchAlgorithmException {
+    public void buyMarketOrder(String coinNm, double price) throws
+            IOException, NoSuchAlgorithmException {
         HashMap<String, String> params = new HashMap<>();
         params.put("market", coinNm);
         params.put("side", "bid"); // buy
@@ -67,7 +69,8 @@ public class AutoTrade {
         Log.d(TAG, data);
     }
 
-    public void sellMarketOrder(String coinNm, double price) throws IOException, NoSuchAlgorithmException {
+    public void sellMarketOrder(String coinNm, double price) throws
+            IOException, NoSuchAlgorithmException {
         HashMap<String, String> params = new HashMap<>();
         params.put("market", coinNm);
         params.put("side", "ask"); // sell

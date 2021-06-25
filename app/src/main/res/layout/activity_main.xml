@@ -7,13 +7,18 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <EditText
+        android:id="@+id/edit_coinNm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter ticker" />
+
     <Button
         android:id="@+id/btn_order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="주문"
         android:layout_gravity="center"
-        />
+        android:text="주문" />
 
     <Button
         android:id="@+id/btn_cancel"

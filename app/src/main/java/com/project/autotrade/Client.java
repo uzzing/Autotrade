@@ -82,6 +82,4 @@ public class Client {
         HttpEntity entity = response.getEntity();
         return entity;
     }
-
-
 }

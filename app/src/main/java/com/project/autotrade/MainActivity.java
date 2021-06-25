@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
+import android.widget.EditText;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,23 +19,23 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import cz.msebera.android.httpclient.util.EntityUtils;
-
 
 public class MainActivity extends AppCompatActivity {
 
     private RequestQueue requestQueue;
     private static final String TAG = "Main";
     int value = 0;
-    private BackgroundTask task;
 
+    public static BackgroundTask task; // used in AutoTrade.class
+    private static String currentPrice; // send to AutoTrade.class
+    private static String targetPrice; // send to AutoTrade.class
+    private static String coinNm; // send to AutoTrade.class
+    AutoTrade autoTrade = new AutoTrade();
+
+    EditText edit_coinNm;
+
+    // <-- function -->
+    // UI
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +46,14 @@ public class MainActivity extends AppCompatActivity {
         btn_order.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                edit_coinNm = findViewById(R.id.edit_coinNm);
+
+                coinNm = edit_coinNm.getText().toString().toUpperCase();
+
+                if (!coinNm.isEmpty()) {
                     task = new BackgroundTask();
-                    task.execute();
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
             }
         });
 
@@ -56,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                task.cancel(true); //반복 취소
+                task.cancel(true);
             }
         });
 
@@ -70,12 +76,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (requestQueue == null){
+        if (requestQueue == null) {
             requestQueue = Volley.newRequestQueue(getApplicationContext());
         }
     } // onCreate
 
-    private void getOrderBookData(String coinNm){
+    // Http communication by using Volley library
+    public void getOrderBookData(String coinNm) {
 
         final String sCoinNm = coinNm;
 
@@ -86,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         GetJson getJson = new GetJson();
-                        getJson.getCurrentPrice(response);
+                        currentPrice = getJson.getCurrentPrice(response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -94,23 +101,24 @@ public class MainActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, "onErrorResponse: " + error.getMessage());
                     }
-                }){
+                }) {
         };
         request.setShouldCache(false);
         requestQueue.add(request);
     } // getOrderBooks
 
+    // Http communication by using Volley library
     public void getTickerData(String coinNm) {
 
-        final String coinName = coinNm;
+        final String sCoinNm = coinNm;
 
-        String url = "https://api.upbit.com/v1/ticker?markets=KRW-" + coinName;
+        String url = "https://api.upbit.com/v1/ticker?markets=KRW-" + sCoinNm;
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         GetJson getJson = new GetJson();
-                        getJson.getTargetPrice(response);
+                        targetPrice = getJson.getTargetPrice(response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -124,35 +132,32 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    class BackgroundTask extends AsyncTask<Integer, String, Integer>
-    {
+    // Main thread
+    class BackgroundTask extends AsyncTask<Integer, String, Integer> {
         @Override
-        protected void onPreExecute(){ }
+        protected void onPreExecute() {
+        }
 
         @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
         @Override
         protected Integer doInBackground(Integer... values) {
-            try {
-                getOrderBookData("BTC");
-                getTickerData("BTC");
 
-                AutoTrade autoTrade = new AutoTrade();
-                autoTrade.autotrade();
+            try {
+                getOrderBookData(coinNm);
+                getTickerData(coinNm);
 
                 Thread.sleep(1000);
 
+                AutoTradeThread autoTradeThread = new AutoTradeThread();
+                autoTradeThread.run();
+
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-
             return value;
         }
 
-        //상태확인
         @Override
         protected void onProgressUpdate(String... values) {
         }

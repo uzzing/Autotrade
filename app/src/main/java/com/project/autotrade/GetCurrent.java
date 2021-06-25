@@ -60,7 +60,7 @@ public class GetCurrent extends AppCompatActivity {
                 String coinNm = edit_coinNm.getText().toString().toUpperCase();
 
                 if (!coinNm.isEmpty()) {
-                    getTicker(coinNm);
+                    getTickerData(coinNm);
                 }
             } //onClick
         }); //setOnClickListener
