@@ -254,4 +254,26 @@ public class GetJson {
             return null;
         }
     }
+
+    public void recentTradeVolume(ArrayList<HashMap<String, String>> tenCoins) throws JSONException, IOException, NoSuchAlgorithmException, InterruptedException {
+        Client client = new Client();
+        ArrayList<HashMap<String, String>> newTopTenList = new ArrayList<HashMap<String, String>>();
+        for (int i = 0; i < tenCoins.size(); i++) {
+            String coinNm = tenCoins.get(i).get("coinNm");
+            JSONArray jsonArray = new JSONArray(EntityUtils.toString(client.getTickerData(coinNm)));
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            String changeRate = jsonObject.get("signed_change_rate").toString();
+            newTopTenList.add(setHashMap(coinNm, null, changeRate));
+            Thread.sleep(10); // to receive datas without error
+        }
+        // sort hashMap in descending order
+        Collections.sort(newTopTenList, new Comparator<HashMap<String, String>>() {
+            @Override
+            public int compare(HashMap<String, String> hm1, HashMap<String, String> hm2) {
+                Double rate1 = Double.parseDouble(hm1.get("changeRate"));
+                Double rate2 = Double.parseDouble(hm2.get("changeRate"));
+                return rate2.compareTo(rate1);
+            }
+        });
+    }
 }
