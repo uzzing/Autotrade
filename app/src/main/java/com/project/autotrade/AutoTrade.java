@@ -14,6 +14,10 @@ public class AutoTrade {
 
     private static final String TAG = "Main";
 
+    public void autotradeOneMinute() {
+
+    }
+
     public void autotrade(String coinNm, String currentPrice, String targetPrice, LocalDateTime now) throws IOException, NoSuchAlgorithmException, InterruptedException {
 
 //        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(9, 0, 0));
@@ -56,8 +60,7 @@ public class AutoTrade {
         }
     }
 
-    public void buyMarketOrder(String coinNm, double price) throws
-            IOException, NoSuchAlgorithmException {
+    public void buyMarketOrder(String coinNm, double price) throws IOException, NoSuchAlgorithmException {
         HashMap<String, String> params = new HashMap<>();
         params.put("market", coinNm);
         params.put("side", "bid"); // buy
@@ -69,8 +72,7 @@ public class AutoTrade {
         Log.d(TAG, data);
     }
 
-    public void sellMarketOrder(String coinNm, double price) throws
-            IOException, NoSuchAlgorithmException {
+    public void sellMarketOrder(String coinNm, double price) throws IOException, NoSuchAlgorithmException {
         HashMap<String, String> params = new HashMap<>();
         params.put("market", coinNm);
         params.put("side", "ask"); // sell

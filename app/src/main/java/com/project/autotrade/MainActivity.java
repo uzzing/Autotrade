@@ -66,7 +66,10 @@ public class MainActivity extends AppCompatActivity {
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                task.cancel(true);
+                //task.cancel(true);
+                task2 = new BackgroundTask2();
+                task2.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
             }
         });
 
@@ -116,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
         final String sCoinNm = coinNm;
 
-        String url = "https://api.upbit.com/v1/ticker?markets=KRW-" + sCoinNm;
+        String url = "https://api.upbit.com/v1/ticker?markets=" + sCoinNm; //
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -192,6 +195,44 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static BackgroundTask2 task2;
+
+    class BackgroundTask2 extends AsyncTask<Integer, String, Integer> {
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
+        @Override
+        protected Integer doInBackground(Integer... values) {
+
+            try {
+                GetJson getJson = new GetJson();
+
+                getJson.getAllCoinNm();
+                getJson.getTopTenCoin();
+
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return value;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+        }
+
+        @Override
+        protected void onCancelled() {
         }
     }
 }

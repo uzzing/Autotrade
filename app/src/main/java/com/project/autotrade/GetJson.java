@@ -2,15 +2,20 @@ package com.project.autotrade;
 
 import android.util.Log;
 
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 
 import cz.msebera.android.httpclient.util.EntityUtils;
 
@@ -24,22 +29,17 @@ public class GetJson {
 
             JSONObject jsonObject = jsonArray.getJSONObject(0);
 
-            //변수에 호가정보를 담는다.
             String orderbook_units = jsonObject.get("orderbook_units").toString();
 
-            //변수를 jsonArray 타입의 변수에 담는다.
             JSONArray arrayUnits = new JSONArray(orderbook_units);
 
-            //매수,매도 정보를 담을 리스트 선언
             ArrayList<Double> askPriceList = new ArrayList<>();
             ArrayList<Double> bidPriceList = new ArrayList<>();
 
             for (int i = 0; i < arrayUnits.length(); i++) {
 
-                //배열안에 있는 오브젝트 타입의 데이터를 변수에 담는다.
                 JSONObject objectUnits = arrayUnits.getJSONObject(i);
 
-                //변수에서 호가정보를 꺼내서 각각의 변수에 담는다.
                 String ask_price = objectUnits.get("ask_price").toString();
                 String bid_price = objectUnits.get("bid_price").toString();
 
@@ -98,10 +98,8 @@ public class GetJson {
             // http client
             Client client = new Client();
 
-            //1. 데이터 담기
             String data = EntityUtils.toString(client.getEntity());
 
-            //2. 데이터를 배열에 담기
             JSONArray jsonArray = new JSONArray(data);
 
             String currency;
@@ -109,11 +107,9 @@ public class GetJson {
 
             for (int i = 0; i < jsonArray.length(); i++) {
 
-                //3. 배열에 있는 오브젝트를 오브젝트에 담기
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                //4. 오브젝트에 있는 데이터를 key값으로 불러오기
-                currency = jsonObject.get("currency").toString(); //화폐 종류
+                currency = jsonObject.get("currency").toString();
 
                 if (currency.equals(coinNm)) {
                     balance = jsonObject.get("balance").toString();
@@ -128,41 +124,134 @@ public class GetJson {
         }
     } // getBalance
 
-    private void getAccounts() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    // get balances in my accounts
+    public void getAccounts() throws UnsupportedEncodingException, NoSuchAlgorithmException {
         try {
             // http client
             Client client = new Client();
 
-            //1. 데이터 담기
             String data = EntityUtils.toString(client.getEntity());
 
-            String currency = ""; //화폐 종류
-            String balance = "";//주문가능 금액/수량
-            String locked = ""; //주문 중 묶여있는 금액
-            String avg_buy_price = ""; //매수 평균가
+            String currency = "";
+            String balance = "";
+            String locked = "";
+            String avg_buy_price = "";
 
-            //2. 데이터를 배열에 담기
             JSONArray jsonArray = new JSONArray(data);
 
             for (int i = 0; i < jsonArray.length(); i++) {
 
-                //3. 배열에 있는 오브젝트를 오브젝트에 담기
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                //4. 오브젝트에 있는 데이터를 key값으로 불러오기
-                currency = jsonObject.get("currency").toString();//화폐 종류
-                balance = jsonObject.get("balance").toString();//주문가능 금액&수량
-                locked = jsonObject.get("locked").toString();//주문 중 묶여있는 금액&수량
-                avg_buy_price = jsonObject.get("avg_buy_price").toString();//매수 평균가
+                currency = jsonObject.get("currency").toString();
+                balance = jsonObject.get("balance").toString();
+                locked = jsonObject.get("locked").toString();
+                avg_buy_price = jsonObject.get("avg_buy_price").toString();
 
-                Log.d(TAG, "화폐종류: " + currency);
-                Log.d(TAG, "주문가능 금액&수량: " + balance);
-                Log.d(TAG, "주문 중 묶여있는 금액&수량: " + locked);
-                Log.d(TAG, "매수 평균가: " + avg_buy_price);
+                Log.d(TAG, "Currency name: " + currency);
+                Log.d(TAG, "Balance: " + balance);
+                Log.d(TAG, "Locked Balance: " + locked);
+                Log.d(TAG, "Average buying price : " + avg_buy_price);
             }
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    // the top ten coins that have the highest trade price on 24 hours
+    public void getTopTenCoin() {
+        try {
+            Client client = new Client();
+
+            // get all coin names
+            GetJson getJson = new GetJson();
+            ArrayList<String> coinNm = getJson.getAllCoinNm();
+
+            // to input datas
+            ArrayList<HashMap<String, String>> allCoinList = new ArrayList<HashMap<String, String>>();
+            HashMap<String, String> hashMap = new HashMap<>();
+
+            // store the trade price of 24 hours of each coins to hash map and arraylist
+            // hashMap(coin name, trade price 24)
+            // arraylist(hashMap)
+            for (int i = 0; i < coinNm.size(); i++) {
+                JSONArray jsonArray = new JSONArray(EntityUtils.toString(client.getTickerData(coinNm.get(i))));
+
+                JSONObject jsonObject = jsonArray.getJSONObject(0);
+                String tradePrice24 = jsonObject.get("acc_trade_price_24h").toString();
+
+                BigDecimal convertedPrice = new BigDecimal(Double.parseDouble(tradePrice24));
+                allCoinList.add(setHashMap(coinNm.get(i), convertedPrice.toString(), null));
+
+                Thread.sleep(30); // to receive datas without error
+            }
+            System.out.println("\nEnd\n");
+
+            // sort hashMap in descending order
+            Collections.sort(allCoinList, new Comparator<HashMap<String, String>>() {
+                @Override
+                public int compare(HashMap<String, String> hm1, HashMap<String, String> hm2) {
+                    Double price1 = Double.parseDouble(hm1.get("tradePrice24"));
+                    Double price2 = Double.parseDouble(hm2.get("tradePrice24"));
+                    return price2.compareTo(price1);
+                }
+            });
+
+            // the top ten coins that have the highest trade price on 24 hours
+            ArrayList<HashMap<String, String>> topTenCoins = new ArrayList<HashMap<String, String>>();
+            for (int i = 0; i < 10; i++)
+                topTenCoins.add(allCoinList.get(i));
+
+            recentTradeVolume(topTenCoins);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    } // getTradePrice
+
+    // used in getTopTenCoin function
+    HashMap<String, String> setHashMap(String coinNm, String tradePrice24, String changeRate) {
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("coinNm", coinNm);
+        if (tradePrice24 != null) hashMap.put("tradePrice24", tradePrice24);
+        if (changeRate != null) hashMap.put("changeRate", changeRate);
+        return hashMap;
+    }
+
+    // get all coin names in upbit
+    public ArrayList<String> getAllCoinNm() {
+        try {
+            // http client
+            Client client = new Client();
+
+            // receive data
+            String data = EntityUtils.toString(client.getAllCoins());
+
+            JSONArray jsonArray = new JSONArray(data);
+
+            ArrayList<String> coinNmList = new ArrayList<>();
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                String market = jsonObject.get("market").toString();
+
+                // only get coins that is named "KRW-"
+                if (market.contains("KRW")) coinNmList.add(market);
+            }
+            return coinNmList;
+
+        } catch (IOException | JSONException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

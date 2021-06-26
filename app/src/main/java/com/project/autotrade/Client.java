@@ -29,6 +29,7 @@ public class Client {
     String secretKey = "oQtMqvQxHr7xZJe8wFXcqbMboGcXxxjLDbYrnPkT";
     String serverUrl = "https://api.upbit.com";
 
+    // change the name of method
     public HttpEntity getEntity() throws IOException, NoSuchAlgorithmException {
 
         String jwtToken = Jwts.builder()
@@ -77,6 +78,28 @@ public class Client {
         request.setHeader("Content-Type", "application/json");
         request.addHeader("Authorization", authenticationToken);
         request.setEntity(new StringEntity(new Gson().toJson(params)));
+
+        HttpResponse response = client.execute(request);
+        HttpEntity entity = response.getEntity();
+        return entity;
+    }
+
+    public HttpEntity getAllCoins() throws IOException, NoSuchAlgorithmException {
+
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet request = new HttpGet(serverUrl + "/v1/market/all?isDetails=false");
+        request.setHeader("Content-Type", "application/json");
+
+        HttpResponse response = client.execute(request);
+        HttpEntity entity = response.getEntity();
+        return entity;
+    }
+
+    public HttpEntity getTickerData(String coinNm) throws IOException, NoSuchAlgorithmException {
+
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet request = new HttpGet(serverUrl + "/v1/ticker?markets=" + coinNm);
+        request.setHeader("Content-Type", "application/json");
 
         HttpResponse response = client.execute(request);
         HttpEntity entity = response.getEntity();
