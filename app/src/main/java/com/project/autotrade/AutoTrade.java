@@ -128,4 +128,16 @@ public class AutoTrade {
         String data = EntityUtils.toString(client.postEntity(params));
         Log.d(TAG, data);
     }
+
+    public void buyOpeningPriceOrder(String coinNm, double price, double volume) throws IOException, NoSuchAlgorithmException {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("market", coinNm);
+        params.put("side", "bid"); // buy
+        params.put("volume", Double.toString(volume));
+        params.put("price", Double.toString(price));
+        params.put("ord_type", "limit");
+        Client client = new Client();
+        String data = EntityUtils.toString(client.postEntity(params));
+        Log.d(TAG, data);
+    }
 }
