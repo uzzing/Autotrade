@@ -19,9 +19,11 @@ import java.util.HashMap;
 
 import cz.msebera.android.httpclient.util.EntityUtils;
 
-public class GetJson {
+public class GetJson  {
 
     private static final String TAG = "Main";
+    public static String coinName;
+    private static ArrayList<HashMap<String, String>> tradingTopTenCoin;
 
     public String getCurrentPrice(String data) {
         try {
@@ -159,62 +161,81 @@ public class GetJson {
         }
     }
 
-    // the top ten coins that have the highest trade price on 24 hours
-    public void getTopTenCoin() {
-        try {
-            Client client = new Client();
+    // get all coin names in upbit
+    public ArrayList<String> getAllCoinNm() throws IOException, NoSuchAlgorithmException, JSONException, InterruptedException {
 
-            // get all coin names
-            GetJson getJson = new GetJson();
-            ArrayList<String> coinNm = getJson.getAllCoinNm();
+        System.out.println("getAllCoinNm()");
+        // http
+        Client client = new Client();
 
-            // to input datas
-            ArrayList<HashMap<String, String>> allCoinList = new ArrayList<HashMap<String, String>>();
-            HashMap<String, String> hashMap = new HashMap<>();
+        // receive data
+        String data = EntityUtils.toString(client.getAllCoins());
 
-            // store the trade price of 24 hours of each coins to hash map and arraylist
-            // hashMap(coin name, trade price 24)
-            // arraylist(hashMap)
-            for (int i = 0; i < coinNm.size(); i++) {
-                JSONArray jsonArray = new JSONArray(EntityUtils.toString(client.getTickerData(coinNm.get(i))));
+        JSONArray jsonArray = new JSONArray(data);
 
-                JSONObject jsonObject = jsonArray.getJSONObject(0);
-                String tradePrice24 = jsonObject.get("acc_trade_price_24h").toString();
+        ArrayList<String> allCoinNmList = new ArrayList<>();
 
-                BigDecimal convertedPrice = new BigDecimal(Double.parseDouble(tradePrice24));
-                allCoinList.add(setHashMap(coinNm.get(i), convertedPrice.toString(), null));
+        for (int i = 0; i < jsonArray.length(); i++) {
 
-                Thread.sleep(30); // to receive datas without error
-            }
-            System.out.println("\nEnd\n");
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-            // sort hashMap in descending order
-            Collections.sort(allCoinList, new Comparator<HashMap<String, String>>() {
-                @Override
-                public int compare(HashMap<String, String> hm1, HashMap<String, String> hm2) {
-                    Double price1 = Double.parseDouble(hm1.get("tradePrice24"));
-                    Double price2 = Double.parseDouble(hm2.get("tradePrice24"));
-                    return price2.compareTo(price1);
-                }
-            });
+            String market = jsonObject.get("market").toString();
 
-            // the top ten coins that have the highest trade price on 24 hours
-            ArrayList<HashMap<String, String>> topTenCoins = new ArrayList<HashMap<String, String>>();
-            for (int i = 0; i < 10; i++)
-                topTenCoins.add(allCoinList.get(i));
+            // only get coins that is named "KRW-"
+            if (market.contains("KRW")) allCoinNmList.add(market);
 
-            recentTradeVolume(topTenCoins);
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
-    } // getTradePrice
+        //for (String a : allCoinNmList) System.out.println(a);
+        return allCoinNmList;
+    } // getAllCoinNm
+
+    // the top ten coins that have the highest trade price on 24 hours
+    public void getTopTenCoin() throws InterruptedException, JSONException, IOException, NoSuchAlgorithmException {
+
+        System.out.println("getTopTenCoin()");
+        // get datas
+        ArrayList<String> allCoinNmList = getAllCoinNm();
+
+        // input datas
+        ArrayList<HashMap<String, String>> notOrderedAllCoin = new ArrayList<HashMap<String, String>>();
+
+        // http
+        Client client = new Client();
+
+        // store the trade price of 24 hours of each coins to hash map and arraylist
+        // hashMap(coin name, trade price 24)
+        // arraylist(hashMap)
+        for (int i = 0; i < allCoinNmList.size(); i++) {
+            String coinNm = allCoinNmList.get(i);
+            JSONArray jsonArray = new JSONArray(EntityUtils.toString(client.getTickerData(coinNm)));
+
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            String tradePrice24 = jsonObject.get("acc_trade_price_24h").toString();
+
+            BigDecimal trade_price_24 = new BigDecimal(Double.parseDouble(tradePrice24));
+            notOrderedAllCoin.add(setHashMap(coinNm, trade_price_24.toString(), null));
+
+            Thread.sleep(30); // to receive datas without error
+        }
+
+        // sort hashMap in descending order
+        Collections.sort(notOrderedAllCoin, new Comparator<HashMap<String, String>>() {
+            @Override
+            public int compare(HashMap<String, String> hm1, HashMap<String, String> hm2) {
+                Double price1 = Double.parseDouble(hm1.get("tradePrice24"));
+                Double price2 = Double.parseDouble(hm2.get("tradePrice24"));
+                return price2.compareTo(price1);
+            }
+        });
+
+        // the top ten coins that have the highest trade price on 24 hours
+        tradingTopTenCoin = new ArrayList<HashMap<String, String>>();
+        for (int i = 0; i < 10; i++) {
+            tradingTopTenCoin.add(notOrderedAllCoin.get(i));
+            System.out.println(tradingTopTenCoin.get(i));
+        }
+
+    } // getTopTenCoin
 
     // used in getTopTenCoin function
     HashMap<String, String> setHashMap(String coinNm, String tradePrice24, String changeRate) {
@@ -223,49 +244,29 @@ public class GetJson {
         if (tradePrice24 != null) hashMap.put("tradePrice24", tradePrice24);
         if (changeRate != null) hashMap.put("changeRate", changeRate);
         return hashMap;
-    }
+    } // setHashMap
 
-    // get all coin names in upbit
-    public ArrayList<String> getAllCoinNm() {
-        try {
-            // http client
-            Client client = new Client();
+    public ArrayList<HashMap<String, String>> getRecentTradeVolume() throws JSONException, IOException, NoSuchAlgorithmException, InterruptedException {
 
-            // receive data
-            String data = EntityUtils.toString(client.getAllCoins());
+        System.out.println("getRecentTradeVolume()");
+        // get topTenCoins list
+//        ArrayList<HashMap<String, String>> topTenCoins = getTopTenCoin();
 
-            JSONArray jsonArray = new JSONArray(data);
-
-            ArrayList<String> coinNmList = new ArrayList<>();
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                String market = jsonObject.get("market").toString();
-
-                // only get coins that is named "KRW-"
-                if (market.contains("KRW")) coinNmList.add(market);
-            }
-            return coinNmList;
-
-        } catch (IOException | JSONException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public void recentTradeVolume(ArrayList<HashMap<String, String>> tenCoins) throws JSONException, IOException, NoSuchAlgorithmException, InterruptedException {
-        Client client = new Client();
+        // new arraylist for newTopTenCoins list
         ArrayList<HashMap<String, String>> newTopTenList = new ArrayList<HashMap<String, String>>();
-        for (int i = 0; i < tenCoins.size(); i++) {
-            String coinNm = tenCoins.get(i).get("coinNm");
+
+        // http
+        Client client = new Client();
+
+        for (int i = 0; i < tradingTopTenCoin.size(); i++) {
+            String coinNm = tradingTopTenCoin.get(i).get("coinNm");
             JSONArray jsonArray = new JSONArray(EntityUtils.toString(client.getTickerData(coinNm)));
             JSONObject jsonObject = jsonArray.getJSONObject(0);
             String changeRate = jsonObject.get("signed_change_rate").toString();
             newTopTenList.add(setHashMap(coinNm, null, changeRate));
-            Thread.sleep(10); // to receive datas without error
+            Thread.sleep(30); // to receive datas without error
         }
+
         // sort hashMap in descending order
         Collections.sort(newTopTenList, new Comparator<HashMap<String, String>>() {
             @Override
@@ -275,5 +276,54 @@ public class GetJson {
                 return rate2.compareTo(rate1);
             }
         });
+
+        return newTopTenList;
+    } // recentTradeVolume
+
+    public Double getFinalCoin() throws IOException, NoSuchAlgorithmException, JSONException, InterruptedException {
+
+        System.out.println("getFinalCoin()");
+        // get data
+        ArrayList<HashMap<String, String>> newTopTenList = getRecentTradeVolume();
+
+        for (HashMap<String, String> temp : newTopTenList) System.out.println(temp);
+
+        // http
+        Client client = new Client();
+
+        while (true) {
+            for (int i = 0; i < newTopTenList.size(); i++) {
+                String coinNm = newTopTenList.get(i).get("coinNm");
+
+                JSONArray jsonArray = new JSONArray(EntityUtils.toString(client.getCandleData(coinNm)));
+                JSONObject jsonObject = jsonArray.getJSONObject(0);
+
+                String opening_price = jsonObject.get("opening_price").toString();
+                String trade_price = jsonObject.get("trade_price").toString();
+                Double openingPrice = Double.parseDouble(opening_price);
+                Double tradePrice = Double.parseDouble(trade_price);
+
+                System.out.println(openingPrice + "\t" + tradePrice);
+
+                Thread.sleep(30);
+                if (tradePrice > openingPrice) {
+                    coinName = coinNm;
+                    return openingPrice;
+                } else continue;
+            }
+        }
+    }
+
+    public String getCandleStartTime() throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
+        Client client = new Client();
+
+        String data = EntityUtils.toString(client.getCandleData(coinName));
+
+        JSONArray jsonArray = new JSONArray(data);
+
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
+        String candleStartTime = jsonObject.get("candle_date_time_kst").toString();
+
+        return candleStartTime;
     }
 }

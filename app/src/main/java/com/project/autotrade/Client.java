@@ -105,4 +105,15 @@ public class Client {
         HttpEntity entity = response.getEntity();
         return entity;
     }
+
+    public HttpEntity getCandleData(String coinNm) throws IOException, NoSuchAlgorithmException {
+
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet request = new HttpGet(serverUrl + "/v1/candles/minutes/1?count=1&market=" + coinNm);
+        request.setHeader("Content-Type", "application/json");
+
+        HttpResponse response = client.execute(request);
+        HttpEntity entity = response.getEntity();
+        return entity;
+    }
 }

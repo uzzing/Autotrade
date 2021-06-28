@@ -19,6 +19,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -30,11 +32,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main";
     int value = 0;
 
-    public static BackgroundTask task; // used in AutoTrade.class
-    private static String currentPrice; // send to AutoTrade.class
-    private static String targetPrice; // send to AutoTrade.class
-    private static String coinNm; // send to AutoTrade.class
+    public static BackgroundTask task; // used for autotrade() in AutoTrade.class
+    public static BackgroundTask2 task2; // // used for autotradeOneMinute() in AutoTrade.class
+    private static String currentPrice; // send to autotrade() in AutoTrade.class
+    private static String targetPrice; // send to autotrade() in AutoTrade.class
+    private static String coinNm; // send to autotrade() in AutoTrade.class
     AutoTrade autoTrade = new AutoTrade();
+    GetJson getJson = new GetJson();
 
     EditText edit_coinNm;
 
@@ -158,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
                 AutoTradeThread autoTradeThread = new AutoTradeThread();
                 autoTradeThread.run();
 
-                Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
@@ -186,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                 while (true) {
                     Thread.sleep(1000);
                     LocalDateTime now = LocalDateTime.now().withNano(0);
-                    autoTrade.autotrade(coinNm, currentPrice, targetPrice, now);
+                    autoTrade.autoTrade(coinNm, currentPrice, targetPrice, now);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -198,8 +201,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static BackgroundTask2 task2;
-
     class BackgroundTask2 extends AsyncTask<Integer, String, Integer> {
         @Override
         protected void onPreExecute() {
@@ -210,13 +211,19 @@ public class MainActivity extends AppCompatActivity {
         protected Integer doInBackground(Integer... values) {
 
             try {
-                GetJson getJson = new GetJson();
+                getJson.getTopTenCoin(); // get all coins name & top ten coins list
 
-                getJson.getAllCoinNm();
-                getJson.getTopTenCoin();
+                Thread.sleep(20);
+                AutoTradeOneMinuteThread autoTradeOneMinuteThread = new AutoTradeOneMinuteThread();
+                autoTradeOneMinuteThread.run();
 
-                Thread.sleep(1000);
             } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
@@ -233,6 +240,23 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled() {
+        }
+    }
+
+    // Thread that used in BackgroundTask.class
+    class AutoTradeOneMinuteThread implements Runnable {
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    Thread.sleep(1000);
+                    getJson.getFinalCoin();
+                    LocalDateTime now = LocalDateTime.now().withNano(0);
+                    autoTrade.autoTradeOneMinute(now);
+                }
+            } catch (InterruptedException | NoSuchAlgorithmException | JSONException | IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
