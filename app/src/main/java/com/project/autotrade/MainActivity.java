@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     EditText edit_coinNm;
 
     // <-- function -->
-    // UI
+    // UIxw
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
