@@ -20,7 +20,7 @@ public class AutoTrade {
     private static final String TAG = "Main";
     GetJson getJson = new GetJson();
 
-    public void autoTradeOneMinute(LocalDateTime now) throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
+    public void autoTradeOneMinute() throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
         System.out.println(GetJson.coinName);
         System.out.println(getJson.getCandleStartTime());
         //System.out.println(getJson.getFinalCoin());
@@ -28,6 +28,8 @@ public class AutoTrade {
         String date = getJson.getCandleStartTime();
         LocalDateTime sellTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME).plusMinutes(1);
         String uuid = "";
+        HashMap<String, Object> buyData = null;
+
         // now == "candle_date_time_kst" + 1 --> sell
         try {
             // buy
@@ -38,24 +40,48 @@ public class AutoTrade {
 
             if (krw > 5000) {
                 // 시장가로 구매
-                // buyMarketOrder(GetJson.coinName, krw * 0.9995);
+                String buy_data = buyMarketOrder(GetJson.coinName, krw * 0.9995);
+                buyData = getBuyData(buy_data);
 
                 // 시가로 구매
-                double openingPrice = getJson.getFinalCoin();
-                double volumn = krw / openingPrice * 0.9;
-                System.out.println(openingPrice + " " + volumn);
-
-                uuid = buyOpeningPriceOrder(GetJson.coinName, openingPrice, volumn);
-                System.out.println(uuid);
+//                double openingPrice = getJson.getFinalCoin().get("openingPrice");
+//                double volumn = krw / openingPrice * 0.9;
+//                System.out.println(openingPrice + " " + volumn);
+//
+//                String buy_data = buyOpeningPriceOrder(GetJson.coinName, openingPrice, volumn);
+//                buyData = getBuyData(buy_data); // hashmap
             }
 
             while (true) {
-                LocalDateTime now2 = LocalDateTime.now().withNano(0);
-                System.out.println("now : " + now2); // unfix
+                LocalDateTime now = LocalDateTime.now().withNano(0);
+                System.out.println("now : " + now); // unfix
                 System.out.println("selltime : " + sellTime); // fix
 
-                // sell
-                if (now2.equals(sellTime)) {
+                // sell condition 1: tradePrice == buyPrice * 0.9995
+                try {
+                    String strCurrencyBalance = new GetJson().getBalance(GetJson.coinName.substring(4));
+                    double currencyBalance = Double.parseDouble(strCurrencyBalance);
+
+                    double buyPrice = krw / currencyBalance;
+                    double tradePrice = getJson.getFinalCoin().get("tradePrice"); // should modify
+
+                    System.out.println("tradePrice : " + tradePrice);
+                    System.out.println("buyPrice : " + buyPrice);
+
+                    if (tradePrice == buyPrice * 0.995) {
+                        sellMarketOrder(GetJson.coinName, currencyBalance * 0.9995);
+                        break;
+                    }
+
+                } catch (NullPointerException e) {
+                    System.out.println("currencyBalance is null");
+                    continue;
+                }
+
+
+                // sell condition 2 : now == sellTime
+                if (now.equals(sellTime)) {
+
                     System.out.println(GetJson.coinName);
                     Log.d(TAG, "sell");
 
@@ -64,11 +90,9 @@ public class AutoTrade {
                     if (strCurrencyBalance == null) {
                         deleteOrder(uuid);
                         break;
-                    } else {
+                    }
+                    else {
                         double currencyBalance = Double.parseDouble(strCurrencyBalance);
-
-                        System.out.println(currencyBalance);
-
                         if (currencyBalance > 0.00008)
                             sellMarketOrder(GetJson.coinName, currencyBalance * 0.9995);
                         break;
@@ -120,7 +144,7 @@ public class AutoTrade {
         }
     }
 
-    public void buyMarketOrder(String coinNm, double price) throws IOException, NoSuchAlgorithmException, JSONException {
+    public String buyMarketOrder(String coinNm, double price) throws IOException, NoSuchAlgorithmException, JSONException {
         HashMap<String, String> params = new HashMap<>();
         params.put("market", coinNm);
         params.put("side", "bid"); // buy
@@ -131,6 +155,7 @@ public class AutoTrade {
         String data = EntityUtils.toString(client.postEntity(params));
 
         Log.d(TAG, data);
+        return data;
     }
 
     public void sellMarketOrder(String coinNm, double volume) throws IOException, NoSuchAlgorithmException {
@@ -157,11 +182,22 @@ public class AutoTrade {
         String data = EntityUtils.toString(client.postEntity(params));
 
         Log.d(TAG, data);
+
+        return data;
+    }
+
+    public HashMap<String, Object> getBuyData(String data) throws InterruptedException, JSONException {
         Thread.sleep(30);
         JSONObject jsonObject = new JSONObject(data);
         String uuid = jsonObject.get("uuid").toString();
+        String buy_price = jsonObject.get("price").toString();
+        Double buyPrice = Double.parseDouble(buy_price);
 
-        return uuid;
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("uuid", uuid);
+        map.put("buyPrice", buyPrice);
+
+        return map;
     }
 
     public void deleteOrder(String uuid) throws IOException, NoSuchAlgorithmException {

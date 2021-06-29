@@ -1,6 +1,7 @@
 package com.project.autotrade;
 
 import android.util.Log;
+import android.webkit.HttpAuthHandler;
 
 
 import org.json.JSONArray;
@@ -24,6 +25,7 @@ public class GetJson  {
     private static final String TAG = "Main";
     public static String coinName;
     private static ArrayList<HashMap<String, String>> tradingTopTenCoin;
+    private static ArrayList<HashMap<String, String>> newTopTenList;
 
     public String getCurrentPrice(String data) {
         try {
@@ -246,14 +248,16 @@ public class GetJson  {
         return hashMap;
     } // setHashMap
 
-    public ArrayList<HashMap<String, String>> getRecentTradeVolume() throws JSONException, IOException, NoSuchAlgorithmException, InterruptedException {
+    public void getRecentTradeVolume() throws JSONException, IOException, NoSuchAlgorithmException, InterruptedException {
 
         System.out.println("getRecentTradeVolume()");
         // get topTenCoins list
 //        ArrayList<HashMap<String, String>> topTenCoins = getTopTenCoin();
 
         // new arraylist for newTopTenCoins list
-        ArrayList<HashMap<String, String>> newTopTenList = new ArrayList<HashMap<String, String>>();
+//        ArrayList<HashMap<String, String>> newTopTenList = new ArrayList<HashMap<String, String>>();
+
+        newTopTenList = new ArrayList<HashMap<String, String>>();
 
         // http
         Client client = new Client();
@@ -277,16 +281,16 @@ public class GetJson  {
             }
         });
 
-        return newTopTenList;
+//        return newTopTenList;
     } // recentTradeVolume
 
-    public Double getFinalCoin() throws IOException, NoSuchAlgorithmException, JSONException, InterruptedException {
+    public HashMap<String, Double> getFinalCoin() throws IOException, NoSuchAlgorithmException, JSONException, InterruptedException {
 
         System.out.println("getFinalCoin()");
         // get data
-        ArrayList<HashMap<String, String>> newTopTenList = getRecentTradeVolume();
-
-        for (HashMap<String, String> temp : newTopTenList) System.out.println(temp);
+//        ArrayList<HashMap<String, String>> newTopTenList = getRecentTradeVolume();
+//
+//        for (HashMap<String, String> temp : newTopTenList) System.out.println(temp);
 
         // http
         Client client = new Client();
@@ -305,10 +309,14 @@ public class GetJson  {
 
                 System.out.println(openingPrice + "\t" + tradePrice);
 
+                HashMap<String, Double> map = new HashMap<>();
+                map.put("openingPrice", openingPrice);
+                map.put("tradePrice", tradePrice);
+
                 Thread.sleep(30);
                 if (tradePrice > openingPrice) {
                     coinName = coinNm;
-                    return openingPrice;
+                    return map;
                 } else continue;
             }
         }

@@ -250,9 +250,9 @@ public class MainActivity extends AppCompatActivity {
             try {
                 while (true) {
                     Thread.sleep(1000);
+                    getJson.getRecentTradeVolume();
                     getJson.getFinalCoin();
-                    LocalDateTime now = LocalDateTime.now().withNano(0);
-                    autoTrade.autoTradeOneMinute(now);
+                    autoTrade.autoTradeOneMinute();
                 }
             } catch (InterruptedException | NoSuchAlgorithmException | JSONException | IOException e) {
                 e.printStackTrace();
