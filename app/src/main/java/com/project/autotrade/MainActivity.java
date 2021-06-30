@@ -18,12 +18,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.project.autotrade.trade.AutoTrade;
+import com.project.autotrade.trade.GetCurrent;
+import com.project.autotrade.trade.GetJson;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     public static BackgroundTask2 task2; // // used for autotradeOneMinute() in AutoTrade.class
     private static String currentPrice; // send to autotrade() in AutoTrade.class
     private static String targetPrice; // send to autotrade() in AutoTrade.class
+    private static double tradePrice; // send to autoTradeOneMinute() in AutoTrade.class
     private static String coinNm; // send to autotrade() in AutoTrade.class
     AutoTrade autoTrade = new AutoTrade();
     GetJson getJson = new GetJson();
@@ -122,13 +128,12 @@ public class MainActivity extends AppCompatActivity {
 
         final String sCoinNm = coinNm;
 
-        String url = "https://api.upbit.com/v1/ticker?markets=" + sCoinNm; //
+        String url = "https://api.upbit.com/v1/ticker?markets=KRW-" + sCoinNm;
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        GetJson getJson = new GetJson();
-                        targetPrice = getJson.getTargetPrice(response);
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -247,12 +252,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                while (true) {
+                //while (true) {
                     Thread.sleep(1000);
-                    getJson.getRecentTradeVolume();
                     getJson.getFinalCoin();
-                    autoTrade.autoTradeOneMinute();
-                }
+                    Thread.sleep(50);
+                    System.out.println(GetJson.coinName.substring(4));
+
+                    getTickerData(GetJson.coinName.substring(4));
+
+                    System.out.println("tradePrice : " + tradePrice + " in MainActivity");
+                    autoTrade.autoTradeOneMinute(tradePrice);
+                //}
             } catch (InterruptedException | NoSuchAlgorithmException | JSONException | IOException e) {
                 e.printStackTrace();
             }

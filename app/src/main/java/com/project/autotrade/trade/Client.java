@@ -1,4 +1,4 @@
-package com.project.autotrade;
+package com.project.autotrade.trade;
 
 import com.google.gson.Gson;
 

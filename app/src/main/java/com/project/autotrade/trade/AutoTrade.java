@@ -1,8 +1,9 @@
-package com.project.autotrade;
+package com.project.autotrade.trade;
 
 import android.util.Log;
 
-import org.json.JSONArray;
+import com.project.autotrade.MainActivity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,16 +21,16 @@ public class AutoTrade {
     private static final String TAG = "Main";
     GetJson getJson = new GetJson();
 
-    public void autoTradeOneMinute() throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
+    public void autoTradeOneMinute(double trade_price) throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
         System.out.println(GetJson.coinName);
         System.out.println(getJson.getCandleStartTime());
-        //System.out.println(getJson.getFinalCoin());
 
         String date = getJson.getCandleStartTime();
         LocalDateTime sellTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME).plusMinutes(1);
         String uuid = "";
         HashMap<String, Object> buyData = null;
 
+        final double tradePrice = trade_price;
         // now == "candle_date_time_kst" + 1 --> sell
         try {
             // buy
@@ -63,19 +64,17 @@ public class AutoTrade {
                     double currencyBalance = Double.parseDouble(strCurrencyBalance);
 
                     double buyPrice = krw / currencyBalance;
-                    double tradePrice = getJson.getFinalCoin().get("tradePrice"); // should modify
 
                     System.out.println("tradePrice : " + tradePrice);
                     System.out.println("buyPrice : " + buyPrice);
 
-                    if (tradePrice == buyPrice * 0.995) {
+                    if (tradePrice == buyPrice * 0.995) { // tradePrice is parameter
                         sellMarketOrder(GetJson.coinName, currencyBalance * 0.9995);
                         break;
                     }
 
                 } catch (NullPointerException e) {
                     System.out.println("currencyBalance is null");
-                    continue;
                 }
 
 
@@ -109,8 +108,8 @@ public class AutoTrade {
 
 //        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(9, 0, 0));
 //        LocalDateTime endTime = startTime.plusDays(1).with(LocalTime.of(8, 59, 50));
-        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(0, 0, 0));
-        LocalDateTime endTime = LocalDateTime.now().with(LocalTime.of(1, 47, 0));
+        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(23, 0, 0));
+        LocalDateTime endTime = LocalDateTime.now().with(LocalTime.of(23, 41, 0));
 
         System.out.println(coinNm);
         System.out.println(now);
@@ -137,7 +136,6 @@ public class AutoTrade {
                 if (currencyBalance > 0.00008)
                     sellMarketOrder("KRW-" + coinNm, currencyBalance * 0.9995);
 
-                MainActivity.task.cancel(true);
             }
         } catch (NumberFormatException | JSONException e) {
             e.printStackTrace();
@@ -208,5 +206,4 @@ public class AutoTrade {
         String data = EntityUtils.toString(client.deleteOrder(params));
         Log.d(TAG, data);
     }
-
 }
