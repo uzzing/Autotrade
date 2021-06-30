@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         GetJson getJson = new GetJson();
-                        HashMap<String, Double> data = getJson.getTickerData(response);
+                        HashMap<String, Double> data = getJson.getTickerData(response); //get values
                         double openingPrice = data.get("openingPrice");
                         double highPrice = data.get("highPrice");
                         double lowPrice = data.get("lowPrice");
