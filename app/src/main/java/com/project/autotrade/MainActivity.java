@@ -228,6 +228,56 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // autoTradeFiveMinute
+    class BackgroundTask3 extends AsyncTask<Integer, String, Integer> {
+        @Override
+        protected void onPreExecute() {
+        }
+        @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
+        @Override
+        protected Integer doInBackground(Integer... values) {
+            try {
+                getJson.getTopTenCoin(); // get all coins name & top ten coins list
+                Thread.sleep(1000);
+                AutoTradeFiveMinuteThread autoTradeFiveMinuteThread = new AutoTradeFiveMinuteThread();
+                autoTradeFiveMinuteThread.run();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return value;
+        }
+        @Override
+        protected void onProgressUpdate(String... values) {
+        }
+        @Override
+        protected void onPostExecute(Integer integer) {
+        }
+        @Override
+        protected void onCancelled() {
+        }
+    }
+    // Thread that used in BackgroundTask3.class
+    class AutoTradeFiveMinuteThread implements Runnable {
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    getJson.getFinalCoin(5);
+                    getTickerData(GetJson.coinName.substring(4));
+                    Thread.sleep(1000);
+                    autoTrade.autoTradeFiveMinute();
+                }
+            } catch (InterruptedException | NoSuchAlgorithmException | JSONException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     // Http communication by using Volley library
     public void getOrderBookData(String coinNm) {
