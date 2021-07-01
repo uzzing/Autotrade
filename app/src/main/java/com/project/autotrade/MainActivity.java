@@ -133,7 +133,16 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        GetJson getJson = new GetJson();
+                        HashMap<String, Double> data = getJson.getTickerData(response); //get values
+                        double openingPrice = data.get("openingPrice");
+                        double highPrice = data.get("highPrice");
+                        double lowPrice = data.get("lowPrice");
+                        tradePrice = data.get("tradePrice"); // operate targetPrice
 
+                        NumberFormat format = NumberFormat.getInstance();
+                        format.setGroupingUsed(false);
+                        targetPrice = format.format(openingPrice + (highPrice - lowPrice) * 0.3);
                     }
                 },
                 new Response.ErrorListener() {
