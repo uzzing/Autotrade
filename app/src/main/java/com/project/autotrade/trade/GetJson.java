@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 import cz.msebera.android.httpclient.util.EntityUtils;
 
-public class GetJson  {
+public class GetJson {
 
     private static final String TAG = "Main";
     public static String coinName;
@@ -285,7 +285,7 @@ public class GetJson  {
         return newTopTenList;
     } // recentTradeVolume
 
-    public HashMap<String, Double> getFinalCoin() throws IOException, NoSuchAlgorithmException, JSONException, InterruptedException {
+    public HashMap<String, Double> getFinalCoin(int minute) throws IOException, NoSuchAlgorithmException, JSONException, InterruptedException {
 
         System.out.println("getFinalCoin()");
 
@@ -300,7 +300,7 @@ public class GetJson  {
             for (int i = 0; i < newTopTenList.size(); i++) {
                 String coinNm = newTopTenList.get(i).get("coinNm");
 
-                JSONArray jsonArray = new JSONArray(EntityUtils.toString(client.getCandleData(coinNm)));
+                JSONArray jsonArray = new JSONArray(EntityUtils.toString(client.getCandleData(coinNm, minute)));
                 JSONObject jsonObject = jsonArray.getJSONObject(0);
 
                 String opening_price = jsonObject.get("opening_price").toString();
@@ -315,6 +315,7 @@ public class GetJson  {
                 map.put("tradePrice", tradePrice);
 
                 Thread.sleep(30);
+
                 if (tradePrice > openingPrice) {
                     coinName = coinNm;
                     return map;
@@ -323,16 +324,26 @@ public class GetJson  {
         }
     }
 
-    public String getCandleStartTime() throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
+
+    public String getCandleStartTime(int minute) throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
         Client client = new Client();
 
-        String data = EntityUtils.toString(client.getCandleData(coinName));
-
+        String data = EntityUtils.toString(client.getCandleData(coinName, minute));
         JSONArray jsonArray = new JSONArray(data);
-
         JSONObject jsonObject = jsonArray.getJSONObject(0);
-        String candleStartTime = jsonObject.get("candle_date_time_kst").toString();
 
+        String candleStartTime = jsonObject.get("candle_date_time_kst").toString();
         return candleStartTime;
+    }
+
+    public String getTradePrice(String coinNm) throws IOException, NoSuchAlgorithmException, JSONException {
+        Client client = new Client();
+
+        String data = EntityUtils.toString(client.getTickerData(coinNm));
+        JSONArray jsonArray = new JSONArray(data);
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
+
+        String tradePrice = jsonObject.get("trade_price").toString();
+        return tradePrice;
     }
 }

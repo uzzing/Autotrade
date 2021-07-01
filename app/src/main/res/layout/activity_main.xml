@@ -21,10 +21,18 @@
         android:text="주문" />
 
     <Button
-        android:id="@+id/btn_cancel"
+        android:id="@+id/btn_oneMinute"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="취소"
+        android:text="1분 자동매매"
+        android:layout_gravity="center"
+        />
+
+    <Button
+        android:id="@+id/btn_fiveMinute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5분 자동매매"
         android:layout_gravity="center"
         />
 
