@@ -56,10 +56,12 @@ public class AutoTrade {
                 System.out.println("now : " + now); // unfix
                 System.out.println("selltime : " + sellTime); // fix
 
-
-
-
-
+                // get Balance
+                String strCurrencyBalance = new GetJson().getBalance(GetJson.coinName.substring(4));
+                double currencyBalance = Double.parseDouble(strCurrencyBalance);
+                // get trade price
+                String strTradePrice = new GetJson().getTradePrice(GetJson.coinName);
+                double tradePrice = Double.parseDouble(strTradePrice);
 
                 // sell condition 1: tradePrice <= buyPrice * 0.995
                 try {
