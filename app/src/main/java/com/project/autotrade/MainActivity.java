@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private static BackgroundTask task; // used for autoTrade() in AutoTrade.class
     private static BackgroundTask2 task2; // used for autoTradeOneMinute() in AutoTrade.class
     private static BackgroundTask3 task3; // used for autoTradeFiveMinute() in AutoTrade.class
+    private static BackgroundTask4 task4; // used for newAutoTradeFiveMinute() in AutoTrade.class
+
     private static String currentPrice; // send to autoTrade() in AutoTrade.class
     private static String targetPrice; // send to autoTrade() in AutoTrade.class
     private static String coinNm; // send to autoTrade() in AutoTrade.class
@@ -89,6 +91,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 task3 = new BackgroundTask3();
                 task3.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            }
+        });
+
+        // newAutoTradeFiveMinute task
+        Button btn_newFiveMinute = findViewById(R.id.btn_newFiveMinute);
+        btn_newFiveMinute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                task4 = new BackgroundTask4();
+                task4.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }
         });
@@ -237,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Integer doInBackground(Integer... values) {
             try {
-                getJson.getTopTenCoin(); // get all coins name & top ten coins list
+                getJson.getTopTenCoin(); // set the global data of 'tradeTopTenCoin'
                 Thread.sleep(1000);
                 AutoTradeFiveMinuteThread autoTradeFiveMinuteThread = new AutoTradeFiveMinuteThread();
                 autoTradeFiveMinuteThread.run();
@@ -268,12 +281,73 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             try {
                 while (true) {
-                    getJson.getFinalCoin(5);
+                    getJson.getFinalCoin(5); // set the global data 'coinName'
                     getTickerData(GetJson.coinName.substring(4));
                     Thread.sleep(1000);
+
                     autoTrade.autoTradeFiveMinute();
                 }
             } catch (InterruptedException | NoSuchAlgorithmException | JSONException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // newAutoTradeFiveMinute
+    class BackgroundTask4 extends AsyncTask<Integer, String, Integer> {
+        @Override
+        protected void onPreExecute() {
+        }
+        @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
+        @Override
+        protected Integer doInBackground(Integer... values) {
+            try {
+                getJson.getTopTenCoin(); // set the global data of 'tradeTopTenCoin'
+                getJson.getRecentTradeVolume(); // set the global data of 'recentVolumeTenCoin'
+
+                Thread.sleep(1000);
+
+                NewAutoTradeFiveMinuteThread newAutoTradeFiveMinuteThread = new NewAutoTradeFiveMinuteThread();
+                newAutoTradeFiveMinuteThread.run();
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return value;
+        }
+        @Override
+        protected void onProgressUpdate(String... values) {
+        }
+        @Override
+        protected void onPostExecute(Integer integer) {
+        }
+        @Override
+        protected void onCancelled() {
+        }
+    }
+
+    // Thread that used in BackgroundTask4.class
+    class NewAutoTradeFiveMinuteThread implements Runnable {
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    autoTrade.newAutoTradeFiveMinute();
+                    Thread.sleep(1000);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }

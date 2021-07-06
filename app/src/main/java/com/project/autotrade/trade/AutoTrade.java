@@ -21,11 +21,13 @@ public class AutoTrade {
     private static final String TAG = "Main";
     GetJson getJson = new GetJson();
 
+
+
+
     public void autoTradeFiveMinute() throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
 
-        String date = getJson.getCandleStartTime(5);
+        String date = getJson.getCandleStartTime(GetJson.coinName,5);
         LocalDateTime sellTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME).plusMinutes(5);
-        String uuid = "";
         HashMap<String, Object> buyData = null;
 
         // print
@@ -33,18 +35,18 @@ public class AutoTrade {
         System.out.println("candle start time: " + date);
 
         try {
-                // buy
-                Log.d(TAG, "buy");
+            // buy
+            Log.d(TAG, "buy");
 
-                String strKrw = new GetJson().getBalance("KRW");
-                double krw = Double.parseDouble(strKrw);
-                System.out.println("the balance : " + krw);
+            String strKrw = new GetJson().getBalance("KRW");
+            double krw = Double.parseDouble(strKrw);
+            System.out.println("the balance : " + krw);
 
-                if (krw > 5000) {
-                    // 시장가로 구매
-                    String buy_data = buyMarketOrder(GetJson.coinName, krw * 0.9995);
-                    buyData = getBuyData(buy_data);
-                }
+            if (krw > 5000) {
+                // 시장가로 구매
+                String buy_data = buyMarketOrder(GetJson.coinName, krw * 0.9995);
+                buyData = getBuyData(buy_data);
+            }
 
             // for selling earlier
             ArrayList<Double> priceList = new ArrayList<>();
@@ -59,6 +61,7 @@ public class AutoTrade {
                 // get Balance
                 String strCurrencyBalance = new GetJson().getBalance(GetJson.coinName.substring(4));
                 double currencyBalance = Double.parseDouble(strCurrencyBalance);
+
                 // get trade price
                 String strTradePrice = new GetJson().getTradePrice(GetJson.coinName);
                 double tradePrice = Double.parseDouble(strTradePrice);
@@ -131,9 +134,9 @@ public class AutoTrade {
 
     public void autoTradeOneMinute() throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
         System.out.println(GetJson.coinName);
-        System.out.println(getJson.getCandleStartTime(1));
+        System.out.println(getJson.getCandleStartTime(GetJson.coinName,1));
 
-        String date = getJson.getCandleStartTime(1);
+        String date = getJson.getCandleStartTime(GetJson.coinName,1);
         LocalDateTime sellTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME).plusMinutes(1);
         String uuid = "";
         HashMap<String, Object> buyData = null;
