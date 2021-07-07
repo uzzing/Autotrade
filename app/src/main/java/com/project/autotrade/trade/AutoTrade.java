@@ -21,73 +21,115 @@ public class AutoTrade {
     private static final String TAG = "Main";
     GetJson getJson = new GetJson();
 
-    public void newAutoTradeFiveMinute() throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
-        String finalCoinNm = getJson.getNewFinalCoin();
-        System.out.println(finalCoinNm);
+    public void newAutoTradeFiveMinute(String finalCoinNm) throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
+
+        // get time
         String date = getJson.getCandleStartTime(finalCoinNm,5);
+        LocalDateTime startTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
         LocalDateTime sellTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME).plusMinutes(5);
         HashMap<String, Object> buyData = null;
+
         // print
-        System.out.println("which coin?? " + finalCoinNm);
+        System.out.println("Which coin?? " + finalCoinNm);
         System.out.println("candle start time: " + date);
+
         try {
             // buy
             Log.d(TAG, "buy");
             String strKrw = new GetJson().getBalance("KRW");
             double krw = Double.parseDouble(strKrw);
             System.out.println("the balance : " + krw);
+
             if (krw > 5000) {
                 // 시장가로 구매
                 String buy_data = buyMarketOrder(finalCoinNm, krw * 0.9995);
                 buyData = getBuyData(buy_data);
             }
+
+            Thread.sleep(1000);
+
             // for selling earlier
             ArrayList<Double> priceList = new ArrayList<>();
+
+            double topPrice = 0.0; // for sell condition 2, 3
+            double maxPrice = 0.0; // for sell condition 4
+
             // sell
             while (true) {
+
                 // get date time
                 LocalDateTime now = LocalDateTime.now().withNano(0);
                 System.out.println("now : " + now); // unfix
                 System.out.println("selltime : " + sellTime); // fix
+
                 // get Balance
                 String strCurrencyBalance = new GetJson().getBalance(finalCoinNm.substring(4));
                 double currencyBalance = Double.parseDouble(strCurrencyBalance);
+
                 // get trade price
                 String strTradePrice = new GetJson().getTradePrice(finalCoinNm);
                 double tradePrice = Double.parseDouble(strTradePrice);
+
                 // sell condition 1: tradePrice <= buyPrice * 0.995
                 try {
                     double buyPrice = krw / currencyBalance;
                     System.out.println("tradePrice : " + tradePrice);
                     System.out.println("buyPrice : " + buyPrice);
+
                     if (tradePrice <= buyPrice * 0.99) { // tradePrice is parameter
                         sellMarketOrder(finalCoinNm, currencyBalance * 0.9995);
                         System.out.println("손절 bye bye");
                         Thread.sleep(1000); // take a break
                     }
+
                 } catch (NullPointerException e) {
                     System.out.println("currencyBalance is null");
+                } // sell condition 1
+
+                // sell condition 2 : start time <= now <= 3 minutes
+                // compare tradePrice and topPrice
+                if (now.isAfter(startTime) && now.isBefore(startTime.plusMinutes(3))) {
+
+                    if (tradePrice > topPrice) topPrice = tradePrice;
+
                 }
-                // sell condition 2 : sellTime - 30second < now < sellTime (30-59 seconds)
+
+                System.out.println("topPrice : " + topPrice);
+
+                // sell condition 3 : 3 minute <= now <= sellTime
+                if (now.isAfter(startTime.plusMinutes(3)) && now.isBefore(sellTime)) {
+                    if (tradePrice <= topPrice * 0.997) {
+                        if (currencyBalance > 0.00008)
+                            sellMarketOrder(finalCoinNm, currencyBalance * 0.9995);
+                    }
+                }
+
+                // sell condition 4 : sellTime - 30second < now < sellTime (30-59 seconds)
                 // 가장 높은 값을 찾아내고 다시 그 값이 다시 되면 팔기
                 if (now.isAfter(sellTime.minusSeconds(30)) && now.isBefore(sellTime)) {
+
                     System.out.println(sellTime.minusSeconds(30));
                     priceList.add(tradePrice); // add data every while loop
                     System.out.println("before sorting" + priceList);
-                    double maxPrice = 0.0;
-                    if (priceList.size() == 15) { // tradePrice in 30 ~ 40 seconds
+
+                    if (priceList.size() == 15) { // tradePrice in 30 ~ 45 seconds
                         Collections.sort(priceList, Collections.reverseOrder());
                         maxPrice = priceList.get(0);
                         System.out.println("after sorting" + priceList);
                     }
+
                     System.out.println("maxPrice : " + maxPrice);
-                    if (maxPrice == tradePrice) { // 40 ~ 59 seconds
+
+                    if (maxPrice == tradePrice) { // 45 ~ 59 seconds
                         sellMarketOrder(finalCoinNm, currencyBalance * 0.9995);
                         // and don't break
                     }
-                }
-                // sell condition 3 : now >= sellTime
+                } // sell condition 4
+
+
+                // sell condition 5 : now >= sellTime
                 try {
+
                     if (now.equals(sellTime) || now.isAfter(sellTime)) {
                         System.out.println(finalCoinNm);
                         Log.d(TAG, "sell");
@@ -96,18 +138,21 @@ public class AutoTrade {
                         Thread.sleep(1000); // take one second
                         break;
                     }
+
                 } catch (NullPointerException e) {
                     break;
                 /* if the balance is null because currency sold when it was condition2,
                the balance become null and come here */
-                }
+                } // sell condition 5
+
                 Thread.sleep(1000); // take one second -> plue one second to now
-            }
+
+            } // sell while loop
+
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-    }
-
+    } // newAutoTradeFiveMinute
 
     public void autoTradeFiveMinute() throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
 

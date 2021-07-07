@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private static String currentPrice; // send to autoTrade() in AutoTrade.class
     private static String targetPrice; // send to autoTrade() in AutoTrade.class
     private static String coinNm; // send to autoTrade() in AutoTrade.class
+    private static ArrayList<HashMap<String, String>> tradePriceList;
     AutoTrade autoTrade = new AutoTrade();
     GetJson getJson = new GetJson();
 
@@ -250,10 +252,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Integer doInBackground(Integer... values) {
             try {
-                getJson.getTopTenCoin(); // set the global data of 'tradeTopTenCoin'
+                getJson.getTopTenCoin(); // set the global data 'tradeTopTenCoin'
                 Thread.sleep(1000);
+
                 AutoTradeFiveMinuteThread autoTradeFiveMinuteThread = new AutoTradeFiveMinuteThread();
                 autoTradeFiveMinuteThread.run();
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (NoSuchAlgorithmException e) {
@@ -302,8 +306,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Integer doInBackground(Integer... values) {
             try {
-                getJson.getTopTenCoin(); // set the global data of 'tradeTopTenCoin'
-                getJson.getRecentTradeVolume(); // set the global data of 'recentVolumeTenCoin'
+                getJson.getTopTenCoin(); // set the global data 'tradeTopTenCoin'
+                getJson.getRecentTradeVolume(); // set the global data 'recentVolumeTenCoin'
 
                 Thread.sleep(1000);
 
@@ -337,10 +341,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                while (true) {
-                    autoTrade.newAutoTradeFiveMinute();
-                    Thread.sleep(1000);
-                }
+
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (NoSuchAlgorithmException e) {

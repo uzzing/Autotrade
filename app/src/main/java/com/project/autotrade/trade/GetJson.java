@@ -349,33 +349,30 @@ public class GetJson {
         return tradePrice;
     }
 
-    public String getNewFinalCoin() throws JSONException, NoSuchAlgorithmException, IOException, InterruptedException {
-        // 1. get ten coins list --> tradingTopTenCoin arraylist<hashmap>
-        System.out.println("tradingTopTenCoin" + tradingTopTenCoin);
+    public ArrayList<HashMap<String, String>> getTradePrice(ArrayList<HashMap<String, String>> tradePriceList) throws JSONException, NoSuchAlgorithmException, IOException, InterruptedException {
 
-        // 2. get each trade price and store to one hashmap & repeat 5 times
-        ArrayList<HashMap<String, String>> tradePriceList = new ArrayList<>();
+        for (int i = 0; i < tradingTopTenCoin.size(); i++) {
+            String coinNm = tradingTopTenCoin.get(i).get("coinNm");
+            String tradePrice = getTradePrice(coinNm);
 
-        for (int count = 0; count < 5; count++) {
-            for (int i = 0; i < tradingTopTenCoin.size(); i++) {
-                String coinNm = tradingTopTenCoin.get(i).get("coinNm");
-                String tradePrice = getTradePrice(coinNm);
-
-                HashMap<String, String> map = new HashMap<>();
-                map.put("coinNm", coinNm);
-                map.put("tradePrice", tradePrice);
-                tradePriceList.add(map); // arraylist
-            }
-            Thread.sleep(1000);
+            HashMap<String, String> map = new HashMap<>();
+            map.put("coinNm", coinNm);
+            map.put("tradePrice", tradePrice);
+            tradePriceList.add(map); // arraylist
         }
 
-        for (HashMap<String, String> map : tradePriceList)
-        System.out.println("tradePriceList" + map);
+        return tradePriceList;
+    }
 
+    public String getNewFinalCoin(ArrayList<HashMap<String, String>> tradePriceList) throws JSONException, NoSuchAlgorithmException, IOException, InterruptedException {
+
+        // 1. get ten coins list --> tradingTopTenCoin arraylist<hashmap>
+        // 2. get each trade price and store to one hashmap & repeat 5 times
         // 3. get the five trade price of each coin on the arraylist
         // 4. compare those prices and calculate the percent of 'up'
         // 5. store the percent to new arraylist with hashmap
         ArrayList<HashMap<String, Object>> percentList = new ArrayList<>();
+        String finalCoinNm;
 
         for (int count = 0; count < 10; count++) { // ten coin loop
 
@@ -385,58 +382,58 @@ public class GetJson {
             for (int i = count; i < tradePriceList.size(); i += 10) { // one coin loop
 
                 double tradePrice = Double.parseDouble(tradePriceList.get(i).get("tradePrice"));
+
+                if (preTradePrice != 0 && preTradePrice < tradePrice) up++;
                 preTradePrice = tradePrice;
-
-                if (preTradePrice < tradePrice) up++;
             }
-
-            double percent = up / 5;
 
             HashMap<String, Object> newMap = new HashMap<>();
             newMap.put("coinNm", tradePriceList.get(count).get("coinNm"));
-            newMap.put("percent", percent);
+            newMap.put("upCount", up);
             percentList.add(newMap);
-
-            System.out.println("percent" + newMap);
         }
-
-        System.out.println(percentList);
 
         // 6. sort the arraylist in descending order
         Collections.sort(percentList, new Comparator<HashMap<String, Object>>() {
             @Override
             public int compare(HashMap<String, Object> map1, HashMap<String, Object> map2) {
-                Double percent1 = (Double) map1.get("percent");
-                Double percent2 = (Double) map2.get("percent");
-                return percent2.compareTo(percent1);
+                Integer upCount1 = (Integer) map1.get("upCount");
+                Integer upCount2 = (Integer) map2.get("upCount");
+                return upCount2.compareTo(upCount1);
             }
         });
 
-        System.out.println(percentList);
+        for (HashMap<String, Object> map : percentList)
+            System.out.println(map);
 
         // 7. if there are more than two coins that has the same percent,
         //    check which the coin index is faster in the top ten coin arraylist
-        double firstIndexPercent = (Double) percentList.get(0).get("percent");
+        double firstIndexPercent = (Integer) percentList.get(0).get("upCount");
         System.out.println("firstIndexPercent" + firstIndexPercent);
 
         int newIndex = 0;
         for (int i = 0; i < percentList.size(); i++) {
-            if (firstIndexPercent == (Double) percentList.get(i).get("percent"))
+            if (firstIndexPercent == (Integer) percentList.get(i).get("upCount"))
                 newIndex = i;
         }
 
-        // 7-1. get the final coin's index
-        int finalIndex = recentVolumeTenCoin.size();
+        if (newIndex == 0) {
+            finalCoinNm = (String) percentList.get(0).get("coinNm");
+        }
+        else {
+            // get the final coin's index in recentVolumeTenCoin
+            int finalIndex = recentVolumeTenCoin.size();
 
-        for (int i = 0; i < newIndex; i++) {
-            for (int index = 0; index < recentVolumeTenCoin.size(); index++) {
-                if (percentList.get(i).get("coinNm").equals(recentVolumeTenCoin.get(index).get("coinNm"))) {
-                    if (finalIndex > index) finalIndex = index;
+            for (int i = 0; i < newIndex; i++) {
+                for (int index = 0; index < recentVolumeTenCoin.size(); index++) {
+                    if (percentList.get(i).get("coinNm").equals(recentVolumeTenCoin.get(index).get("coinNm"))) {
+                        if (finalIndex > index) finalIndex = index;
+                    }
                 }
             }
+            finalCoinNm = recentVolumeTenCoin.get(finalIndex).get("coinNm");
+            System.out.println("so, finalCoinNm is" + finalCoinNm);
         }
-        String finalCoinNm = recentVolumeTenCoin.get(finalIndex).get("coinNm");
-        System.out.println(finalCoinNm);
 
         return finalCoinNm;
     }
