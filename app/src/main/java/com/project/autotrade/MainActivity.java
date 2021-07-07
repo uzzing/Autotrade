@@ -341,7 +341,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-
+                while (true) {
+                    tradePriceList = new ArrayList<>();
+                    for (int i = 0; i < 5; i++) {
+                        tradePriceList = new GetJson().getTradePrice(tradePriceList);
+                        Thread.sleep(1000);
+                    }
+                    Thread.sleep(1000);
+                    String finalCoinNm = getJson.getNewFinalCoin(tradePriceList);
+                    autoTrade.newAutoTradeFiveMinute(finalCoinNm);
+                }
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
