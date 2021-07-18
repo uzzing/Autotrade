@@ -22,7 +22,7 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 public class GetJson {
 
     private static final String TAG = "Main";
-    public static String coinName;
+    public static String coinName; // share coin name with AutoTrade.class
     private static ArrayList<HashMap<String, String>> tradingTopTenCoin;
     private static ArrayList<HashMap<String, String>> recentVolumeTenCoin;
 
@@ -251,6 +251,7 @@ public class GetJson {
         hashMap.put("coinNm", coinNm);
         if (tradePrice24 != null) hashMap.put("tradePrice24", tradePrice24);
         if (changeRate != null) hashMap.put("changeRate", changeRate);
+
         return hashMap;
     } // setHashMap
 

@@ -19,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.project.autotrade.trade.AutoTrade;
+import com.project.autotrade.trade.Client;
 import com.project.autotrade.trade.GetCurrent;
 import com.project.autotrade.trade.GetJson;
 
@@ -30,6 +31,8 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import cz.msebera.android.httpclient.util.EntityUtils;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -118,9 +121,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // go to chart activity
+        Button btn_chart = findViewById(R.id.btn_chart);
+        btn_chart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ChartActivity.class);
+                startActivity(intent);
+            }
+        });
+
         if (requestQueue == null) {
             requestQueue = Volley.newRequestQueue(getApplicationContext());
         }
+
     } // onCreate
 
     // Main thread
@@ -342,14 +356,19 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             try {
                 while (true) {
+
                     tradePriceList = new ArrayList<>();
                     for (int i = 0; i < 5; i++) {
                         tradePriceList = new GetJson().getTradePrice(tradePriceList);
                         Thread.sleep(1000);
                     }
+
                     Thread.sleep(1000);
                     String finalCoinNm = getJson.getNewFinalCoin(tradePriceList);
                     autoTrade.newAutoTradeFiveMinute(finalCoinNm);
+
+                    getBuyOrderInfo();
+                    getSellOrderInfo();
                 }
 
             } catch (InterruptedException e) {
@@ -422,4 +441,29 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
+    public void getBuyOrderInfo() throws IOException, NoSuchAlgorithmException {
+        // uuid가 있어야 받아옴
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("uuid", AutoTrade.buyUUID);
+
+        Client client = new Client();
+        System.out.println("GetBuyOrderInfo" + EntityUtils.toString(client.getOrderInfo(params)));
+        //Log.d(TAG, data);
+
+        //return data;
+    }
+
+    public void getSellOrderInfo() throws IOException, NoSuchAlgorithmException {
+        // uuid가 있어야 받아옴
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("uuid", AutoTrade.sellUUID);
+
+        Client client = new Client();
+        System.out.println("GetSellOrderInfo" + EntityUtils.toString(client.getOrderInfo(params)));
+        //Log.d(TAG, data);
+
+        //return data;
+    }
 }
