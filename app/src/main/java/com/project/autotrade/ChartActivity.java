@@ -51,12 +51,11 @@ public class ChartActivity extends AppCompatActivity {
         try {
             barList.add(new BarEntry(0, 0));
 
-            BarDataSet barDataSet = new BarDataSet(null, "5 minutes");
+            BarDataSet barDataSet = new BarDataSet(barList, "5 minutes");
             barDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
             barDataSet.setValueTextColor(Color.RED);
             barDataSet.setValueTextSize(13);
-
-            BarData barData = new BarData(barList);
+            BarData barData = new BarData(barDataSet);
 
             barChart.setData(barData);
             barChart.setFitBars(true);
