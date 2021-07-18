@@ -23,7 +23,9 @@ import com.project.autotrade.trade.Client;
 import com.project.autotrade.trade.GetCurrent;
 import com.project.autotrade.trade.GetJson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -366,9 +368,9 @@ public class MainActivity extends AppCompatActivity {
                     Thread.sleep(1000);
                     String finalCoinNm = getJson.getNewFinalCoin(tradePriceList);
                     autoTrade.newAutoTradeFiveMinute(finalCoinNm);
+                    ChartActivity.calculateProfit();
 
-                    getBuyOrderInfo();
-                    getSellOrderInfo();
+                    Thread.sleep(30);
                 }
 
             } catch (InterruptedException e) {
@@ -439,31 +441,5 @@ public class MainActivity extends AppCompatActivity {
         };
         request.setShouldCache(false);
         requestQueue.add(request);
-    }
-
-    public void getBuyOrderInfo() throws IOException, NoSuchAlgorithmException {
-        // uuid가 있어야 받아옴
-
-        HashMap<String, String> params = new HashMap<>();
-        params.put("uuid", AutoTrade.buyUUID);
-
-        Client client = new Client();
-        System.out.println("GetBuyOrderInfo" + EntityUtils.toString(client.getOrderInfo(params)));
-        //Log.d(TAG, data);
-
-        //return data;
-    }
-
-    public void getSellOrderInfo() throws IOException, NoSuchAlgorithmException {
-        // uuid가 있어야 받아옴
-
-        HashMap<String, String> params = new HashMap<>();
-        params.put("uuid", AutoTrade.sellUUID);
-
-        Client client = new Client();
-        System.out.println("GetSellOrderInfo" + EntityUtils.toString(client.getOrderInfo(params)));
-        //Log.d(TAG, data);
-
-        //return data;
     }
 }

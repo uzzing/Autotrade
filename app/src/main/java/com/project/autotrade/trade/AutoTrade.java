@@ -2,6 +2,8 @@ package com.project.autotrade.trade;
 
 import android.util.Log;
 
+import com.github.mikephil.charting.utils.Utils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -73,11 +75,11 @@ public class AutoTrade {
 
                 // get Balance
                 String strCurrencyBalance = new GetJson().getBalance(finalCoinNm.substring(4));
-                double currencyBalance = Double.parseDouble(strCurrencyBalance);
+                double currencyBalance = Double.valueOf(String.valueOf(strCurrencyBalance));
 
                 // get trade price
                 String strTradePrice = new GetJson().getTradePrice(finalCoinNm);
-                double tradePrice = Double.parseDouble(strTradePrice);
+                double tradePrice = Double.valueOf(strTradePrice);
 
                 double buyPrice = 0;
 
@@ -87,7 +89,7 @@ public class AutoTrade {
                     System.out.println("tradePrice : " + tradePrice);
                     System.out.println("buyPrice : " + buyPrice);
 
-                    if (tradePrice <= buyPrice * 0.99)  {
+                    if (tradePrice <= buyPrice * 0.993)  {
                         String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
                         orderData = getSellOrderData(sellData);
                         sellUUID = orderData.get("uuid").toString();
@@ -173,17 +175,17 @@ public class AutoTrade {
                         Thread.sleep(1000); // take one second
                         break;
                     }
-                } catch (NullPointerException e) {
+                } catch (NullPointerException | NumberFormatException e) {
+                    e.printStackTrace();
                     break;
                 /* if the balance is null because currency sold when it was condition2,
                the balance become null and come here */
                 } // sell condition 5
 
                 Thread.sleep(1000); // take one second -> plue one second to now
-
             } // sell while loop
 
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | NumberFormatException e) {
             e.printStackTrace();
         }
     } // newAutoTradeFiveMinute
