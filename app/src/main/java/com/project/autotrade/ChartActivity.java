@@ -72,9 +72,34 @@ public class ChartActivity extends AppCompatActivity {
         }
     }
 
-
-
-
+    // for calculating profit
+    public static String getBuyOrderInfo() throws IOException, NoSuchAlgorithmException {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("uuid", AutoTrade.buyUUID);
+        Client client = new Client();
+        String data = EntityUtils.toString(client.getOrderInfo(params));
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, data);
+        return data;
+    }
+    // for calculating profit
+    public static String getSellOrderInfo() throws IOException, NoSuchAlgorithmException {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("uuid", AutoTrade.sellUUID);
+        Client client = new Client();
+        String data = EntityUtils.toString(client.getOrderInfo(params));
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, data);
+        return data;
+    }
 
     public static void calculateProfit() throws IOException, NoSuchAlgorithmException, JSONException {
 
