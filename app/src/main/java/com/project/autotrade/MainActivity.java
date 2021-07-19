@@ -370,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
                     autoTrade.newAutoTradeFiveMinute(finalCoinNm);
                     ChartActivity.calculateProfit();
 
-                    Thread.sleep(30);
+                    Thread.sleep(1000);
                 }
 
             } catch (InterruptedException e) {

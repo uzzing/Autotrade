@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "888500883308",
+    "project_id": "autotradeandroidapp",
+    "storage_bucket": "autotradeandroidapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888500883308:android:88140f5327c66d7c8eed49",
+        "android_client_info": {
+          "package_name": "com.project.autotrade"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "888500883308-4vl52m8dpul610j4pert8qg7hmc0odes.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFFv4MEDr41gZJQFUvzaFIc5ZNjSMp-oA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888500883308-4vl52m8dpul610j4pert8qg7hmc0odes.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

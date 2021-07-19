@@ -31,7 +31,7 @@ public class AutoTrade {
     public void newAutoTradeFiveMinute(String finalCoinNm) throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
 
         // get time
-        String date = getJson.getCandleStartTime(finalCoinNm,5);
+        String date = getJson.getCandleStartTime(finalCoinNm, 5);
         LocalDateTime startTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
         LocalDateTime sellTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME).plusMinutes(5);
         HashMap<String, Object> orderData = null;
@@ -65,134 +65,19 @@ public class AutoTrade {
             double topPrice = 0.0; // for sell condition 2, 3
             double maxPrice = 0.0; // for sell condition 4
 
-            // sell
-            while (true) {
-
-                // get date time
-                LocalDateTime now = LocalDateTime.now().withNano(0);
-                System.out.println("now : " + now); // unfix
-                System.out.println("selltime : " + sellTime); // fix
-
-                // get Balance
-                String strCurrencyBalance = new GetJson().getBalance(finalCoinNm.substring(4));
-                double currencyBalance = Double.valueOf(String.valueOf(strCurrencyBalance));
-
-                // get trade price
-                String strTradePrice = new GetJson().getTradePrice(finalCoinNm);
-                double tradePrice = Double.valueOf(strTradePrice);
-
-                double buyPrice = 0;
-
-                // sell condition 1: tradePrice <= buyPrice * 0.99
-                try {
-                    buyPrice = krw / currencyBalance;
-                    System.out.println("tradePrice : " + tradePrice);
-                    System.out.println("buyPrice : " + buyPrice);
-
-                    if (tradePrice <= buyPrice * 0.993)  {
-                        String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
-                        orderData = getSellOrderData(sellData);
-                        sellUUID = orderData.get("uuid").toString();
-
-                        System.out.println("손절때문에 팔렸어요");
-                        Thread.sleep(1000); // take a break
-                    }
-
-                } catch (NullPointerException e) {
-                    System.out.println("currencyBalance is null");
-                } // sell condition 1
-
-                // sell condition 2 : start time <= now <= 3 minutes
-                // compare tradePrice and topPrice
-                if (now.isAfter(startTime) && now.isBefore(startTime.plusMinutes(3))) {
-                    if (tradePrice > topPrice) topPrice = tradePrice;
-                }
-                else {
-                    System.out.println("now is not before three minutes, Top price can't be set");
-                }
-                System.out.println("topPrice : " + topPrice);
-
-                // sell condition 3 : 3 minute <= now <= sellTime
-                if (now.isAfter(startTime.plusMinutes(3)) && now.isBefore(sellTime)) {
-
-                    if (tradePrice <= topPrice * 0.997) {
-
-                        if (tradePrice >= buyPrice) {
-
-                            if (currencyBalance > 0.00008) {
-                                String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
-                                orderData = getSellOrderData(sellData);
-                                sellUUID = orderData.get("uuid").toString();
-
-                                System.out.println("현재가가 topPrice 0.007이라서 팔렸어요");
-                            }
-                        }
-                    }
-                }
-
-                // sell condition 4 : sellTime - 30second < now < sellTime (30-59 seconds)
-                // 가장 높은 값을 찾아내고 다시 그 값이 다시 되면 팔기
-                if (now.isAfter(sellTime.minusSeconds(30)) && now.isBefore(sellTime)) {
-
-                    System.out.println(sellTime.minusSeconds(30));
-                    priceList.add(tradePrice); // add data every while loop // BigDecimal
-                    System.out.println("before sorting" + priceList);
-
-                    if (priceList.size() == 15) { // tradePrice in 30 ~ 45 seconds
-                        Collections.sort(priceList, Collections.reverseOrder());
-                        maxPrice = priceList.get(0);
-                        System.out.println("after sorting" + priceList);
-                    }
-
-                    System.out.println("maxPrice : " + maxPrice);
-
-                    if (maxPrice == tradePrice) { // 45 ~ 59 seconds
-                        String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
-                        orderData = getSellOrderData(sellData);
-                        sellUUID = orderData.get("uuid").toString();
-
-                        System.out.println("마지막 30초때 최고가가 45초 이후에 다시 되어서 팔았어요~");
-                        // and don't break
-                    }
-                } // sell condition 4
 
 
-                // sell condition 5 : now >= sellTime
-                try {
-                    if (now.equals(sellTime) || now.isAfter(sellTime)) {
 
-                        System.out.println(finalCoinNm);
-                        Log.d(TAG, "sell");
 
-                        if (currencyBalance > 0.00008) {
-                            String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
-                            orderData = getSellOrderData(sellData);
-                            sellUUID = orderData.get("uuid").toString();
-
-                            System.out.println("5분 캔들이 끝나서 팔았어요~");
-                        }
-
-                        Thread.sleep(1000); // take one second
-                        break;
-                    }
-                } catch (NullPointerException | NumberFormatException e) {
-                    e.printStackTrace();
-                    break;
-                /* if the balance is null because currency sold when it was condition2,
-               the balance become null and come here */
-                } // sell condition 5
-
-                Thread.sleep(1000); // take one second -> plue one second to now
-            } // sell while loop
-
-        } catch (NullPointerException | NumberFormatException e) {
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
     } // newAutoTradeFiveMinute
 
-    public void autoTradeFiveMinute() throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
+    public void autoTradeFiveMinute() throws
+            InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
 
-        String date = getJson.getCandleStartTime(GetJson.coinName,5);
+        String date = getJson.getCandleStartTime(GetJson.coinName, 5);
         LocalDateTime sellTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME).plusMinutes(5);
         HashMap<String, Object> buyData = null;
 
@@ -301,11 +186,12 @@ public class AutoTrade {
         }
     } // autoTradeFiveMinutes
 
-    public void autoTradeOneMinute() throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
+    public void autoTradeOneMinute() throws
+            InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
         System.out.println(GetJson.coinName);
-        System.out.println(getJson.getCandleStartTime(GetJson.coinName,1));
+        System.out.println(getJson.getCandleStartTime(GetJson.coinName, 1));
 
-        String date = getJson.getCandleStartTime(GetJson.coinName,1);
+        String date = getJson.getCandleStartTime(GetJson.coinName, 1);
         LocalDateTime sellTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME).plusMinutes(1);
         String uuid = "";
         HashMap<String, Object> buyData = null;
@@ -375,8 +261,7 @@ public class AutoTrade {
                     if (strCurrencyBalance == null) {
                         deleteOrder(uuid);
                         break;
-                    }
-                    else {
+                    } else {
                         double currencyBalance = Double.parseDouble(strCurrencyBalance);
                         if (currencyBalance > 0.00008)
                             sellMarketOrder(GetJson.coinName, currencyBalance * 0.9995);
@@ -391,7 +276,9 @@ public class AutoTrade {
         }
     }
 
-    public void autoTrade(String coinNm, String currentPrice, String targetPrice, LocalDateTime now) throws IOException, NoSuchAlgorithmException, InterruptedException {
+    public void autoTrade(String coinNm, String currentPrice, String
+            targetPrice, LocalDateTime
+                                  now) throws IOException, NoSuchAlgorithmException, InterruptedException {
 
 //        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(9, 0, 0));
 //        LocalDateTime endTime = startTime.plusDays(1).with(LocalTime.of(8, 59, 50));
@@ -429,7 +316,8 @@ public class AutoTrade {
         }
     }
 
-    public String buyMarketOrder(String coinNm, double price) throws IOException, NoSuchAlgorithmException, JSONException {
+    public String buyMarketOrder(String coinNm, double price) throws
+            IOException, NoSuchAlgorithmException, JSONException {
         HashMap<String, String> params = new HashMap<>();
         params.put("market", coinNm);
         params.put("side", "bid"); // buy
@@ -443,7 +331,8 @@ public class AutoTrade {
         return data;
     }
 
-    public String sellMarketOrder(String coinNm, double volume) throws IOException, NoSuchAlgorithmException {
+    public String sellMarketOrder(String coinNm, double volume) throws
+            IOException, NoSuchAlgorithmException {
         HashMap<String, String> params = new HashMap<>();
         params.put("market", coinNm);
         params.put("side", "ask"); // sell
@@ -457,7 +346,8 @@ public class AutoTrade {
         return data;
     }
 
-    public String buyOpeningPriceOrder(String coinNm, double price, double volume) throws IOException, NoSuchAlgorithmException, JSONException, InterruptedException {
+    public String buyOpeningPriceOrder(String coinNm, double price, double volume) throws
+            IOException, NoSuchAlgorithmException, JSONException, InterruptedException {
         HashMap<String, String> params = new HashMap<>();
         params.put("market", coinNm);
         params.put("side", "bid"); // buy
@@ -473,7 +363,8 @@ public class AutoTrade {
         return data;
     }
 
-    public HashMap<String, Object> getBuyOrderData(String data) throws InterruptedException, JSONException {
+    public HashMap<String, Object> getBuyOrderData(String data) throws
+            InterruptedException, JSONException {
         Thread.sleep(30);
         JSONObject jsonObject = new JSONObject(data);
         String uuid = jsonObject.get("uuid").toString();
@@ -487,7 +378,8 @@ public class AutoTrade {
         return map;
     }
 
-    public HashMap<String, Object> getSellOrderData(String data) throws InterruptedException, JSONException {
+    public HashMap<String, Object> getSellOrderData(String data) throws
+            InterruptedException, JSONException {
         Thread.sleep(30);
         JSONObject jsonObject = new JSONObject(data);
         String uuid = jsonObject.get("uuid").toString();
