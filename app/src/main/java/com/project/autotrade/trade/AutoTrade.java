@@ -65,9 +65,104 @@ public class AutoTrade {
             double topPrice = 0.0; // for sell condition 2, 3
             double maxPrice = 0.0; // for sell condition 4
 
-
-
-
+            // sell
+            while (true) {
+                try {
+                    // get date time
+                    LocalDateTime now = LocalDateTime.now().withNano(0);
+                    System.out.println("now : " + now); // unfix
+                    System.out.println("selltime : " + sellTime); // fix
+                    // get Balance
+                    String strCurrencyBalance = new GetJson().getBalance(finalCoinNm.substring(4));
+                    double currencyBalance = Double.valueOf(String.valueOf(strCurrencyBalance));
+                    // get trade price
+                    String strTradePrice = new GetJson().getTradePrice(finalCoinNm);
+                    double tradePrice = Double.valueOf(strTradePrice);
+                    double buyPrice = 0;
+                    // sell condition 1: tradePrice <= buyPrice * 0.99
+                    try {
+                        buyPrice = krw / currencyBalance;
+                        System.out.println("tradePrice : " + tradePrice);
+                        System.out.println("buyPrice : " + buyPrice);
+                        if (tradePrice <= buyPrice * 0.993) {
+                            String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
+                            orderData = getSellOrderData(sellData);
+                            sellUUID = orderData.get("uuid").toString();
+                            System.out.println("손절때문에 팔렸어요");
+                            Thread.sleep(1000); // take a break
+                        }
+                    } catch (NullPointerException e) {
+                        System.out.println("currencyBalance is null");
+                    } // sell condition 1
+                    // sell condition 2 : start time <= now <= 3 minutes
+                    // compare tradePrice and topPrice
+                    if (now.isAfter(startTime) && now.isBefore(startTime.plusMinutes(3))) {
+                        if (tradePrice > topPrice) topPrice = tradePrice;
+                    } else {
+                        System.out.println("now is not before three minutes, Top price can't be set");
+                    }
+                    System.out.println("topPrice : " + topPrice);
+                    // sell condition 3 : 3 minute <= now <= sellTime
+                    if (now.isAfter(startTime.plusMinutes(3)) && now.isBefore(sellTime)) {
+                        if (tradePrice <= topPrice * 0.997) {
+                            if (tradePrice >= buyPrice) {
+                                if (currencyBalance > 0.00008) {
+                                    String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
+                                    orderData = getSellOrderData(sellData);
+                                    sellUUID = orderData.get("uuid").toString();
+                                    System.out.println("현재가가 topPrice 0.007이라서 팔렸어요");
+                                }
+                            }
+                        }
+                    }
+                    // sell condition 4 : sellTime - 30second < now < sellTime (30-59 seconds)
+                    // 가장 높은 값을 찾아내고 다시 그 값이 다시 되면 팔기
+                    if (now.isAfter(sellTime.minusSeconds(30)) && now.isBefore(sellTime)) {
+                        System.out.println(sellTime.minusSeconds(30));
+                        priceList.add(tradePrice); // add data every while loop // BigDecimal
+                        System.out.println("before sorting" + priceList);
+                        if (priceList.size() == 15) { // tradePrice in 30 ~ 45 seconds
+                            Collections.sort(priceList, Collections.reverseOrder());
+                            maxPrice = priceList.get(0);
+                            System.out.println("after sorting" + priceList);
+                        }
+                        System.out.println("maxPrice : " + maxPrice);
+                        if (maxPrice == tradePrice) { // 45 ~ 59 seconds
+                            String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
+                            orderData = getSellOrderData(sellData);
+                            sellUUID = orderData.get("uuid").toString();
+                            System.out.println("마지막 30초때 최고가가 45초 이후에 다시 되어서 팔았어요~");
+                            // and don't break
+                        }
+                    } // sell condition 4
+                    // sell condition 5 : now >= sellTime
+                    if (now.equals(sellTime) || now.isAfter(sellTime)) {
+                        System.out.println(finalCoinNm);
+                        Log.d(TAG, "sell");
+                        if (currencyBalance > 0.00008) {
+                            String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
+                            orderData = getSellOrderData(sellData);
+                            sellUUID = orderData.get("uuid").toString();
+                            System.out.println("5분 캔들이 끝나서 팔았어요~");
+                        }
+                        Thread.sleep(1000); // take one second
+                        break;
+                    } // sell condition 5
+    /* if the balance is null because currency sold when it was condition2,
+   the balance become null and come here */
+                    Thread.sleep(1000); // take one second -> plue one second to now
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    LocalDateTime now = LocalDateTime.now().withNano(0);
+                    while (now.isBefore(sellTime)) {
+                        System.out.println("now : " + now);
+                        System.out.println("sell time : " + sellTime);
+                        Thread.sleep(1000);
+                        now = now.plusSeconds(1);
+                    }
+                    break;
+                } // catch
+            } // sell while loop
 
         } catch (NullPointerException e) {
             e.printStackTrace();
