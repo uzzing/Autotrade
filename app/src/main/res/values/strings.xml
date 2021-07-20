@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Autotrade</string>
+    <string-array name="charts">
+        <item>Sum of profit</item>
+        <item>Per 5 minutes</item>
+        <item>Per 1 hour</item>
+        <item>Per 1 day</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

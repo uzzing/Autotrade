@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".chart.Fragment_5minute">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="5minute" />
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/bar_chart_5minute"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginTop="20dp"
+        tools:ignore="MissingConstraints" />
+
+</FrameLayout>
