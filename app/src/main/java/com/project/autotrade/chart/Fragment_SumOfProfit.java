@@ -31,12 +31,49 @@ public class Fragment_SumOfProfit extends Fragment {
     private static FirebaseDatabase firebaseDatabase;
     private static DatabaseReference chartRef;
 
+    @Override
+    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
-
-
-
-
-
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        try {
+            firebaseDatabase = FirebaseDatabase.getInstance();
+            chartRef = firebaseDatabase.getReference("ChartValues");
+            calculateSumOfProfit();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment__sum_of_profit, container, false);
+    }
+    private void calculateSumOfProfit() {
+        chartRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) {
+                if (snapshot.getValue(BarChartData.class) != null) {
+                    BarChartData barChartData = snapshot.getValue(BarChartData.class);
+                    float newProfit = barChartData.getyValue();
+                    sumOfProfit += newProfit;
+                    System.out.println("newProfit" + newProfit);
+                    System.out.println("sumOfProfit" + sumOfProfit);
+                }
+            }
+            @Override
+            public void onChildChanged(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) {
+            }
+            @Override
+            public void onChildRemoved(@NonNull @NotNull DataSnapshot snapshot) {
+            }
+            @Override
+            public void onChildMoved(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) {
+            }
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+            }
+        });
 
 //        System.out.println(Fragment_5minute.barList);
 //
