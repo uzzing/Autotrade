@@ -70,7 +70,7 @@ public class ChartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
-
+        System.out.println("ChartActivity : "+"onCreate()");
         initialization();
     }
 
@@ -84,6 +84,7 @@ public class ChartActivity extends AppCompatActivity {
     }
 
     private void spinner() {
+        System.out.println("ChartActivity : "+"spinner()");
         ArrayAdapter<String> adapter = new ArrayAdapter<>(ChartActivity.this,
                 R.layout.dropdown_item, getResources().getStringArray(R.array.charts));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);

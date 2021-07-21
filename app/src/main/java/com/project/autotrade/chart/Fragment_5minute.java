@@ -60,14 +60,14 @@ public class Fragment_5minute extends Fragment {
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        System.out.println("Fragment_5minute : "+"onCreate()");
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        System.out.println("Fragment_5minute : "+"onCreateView()");
         view = inflater.inflate(R.layout.fragment_5minute, container, false);
 
         barChart = (BarChart) view.findViewById(R.id.bar_chart_5minute);
@@ -246,7 +246,7 @@ public class Fragment_5minute extends Fragment {
                     barChart.setVisibleXRangeMinimum(6);
                     barChart.setVisibleXRangeMaximum(6);
                     barChart.setVisibleXRange(0, 60);
-
+                    System.out.println("(Fragment_5minute)barList: "+barList);
                 } else {
                     barChart.clear();
                     barChart.invalidate();
@@ -258,5 +258,12 @@ public class Fragment_5minute extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        barList = new ArrayList<>();
+        System.out.println("Fragment_5minute: "+"onDestroy()");
+        super.onDestroy();
     }
 }
