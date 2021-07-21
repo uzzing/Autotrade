@@ -19,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.project.autotrade.chart.Fragment_5minute;
+import com.project.autotrade.chart.Fragment_SumOfProfit;
 import com.project.autotrade.trade.AutoTrade;
 import com.project.autotrade.trade.Client;
 import com.project.autotrade.trade.GetCurrent;
@@ -370,6 +371,7 @@ public class MainActivity extends AppCompatActivity {
                     String finalCoinNm = getJson.getNewFinalCoin(tradePriceList);
                     autoTrade.newAutoTradeFiveMinute(finalCoinNm);
                     Fragment_5minute.calculateProfit();
+                    Fragment_SumOfProfit.calculateSumOfProfit();
 
                     Thread.sleep(1000);
                 }
