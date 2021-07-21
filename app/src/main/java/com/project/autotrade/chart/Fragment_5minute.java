@@ -57,6 +57,10 @@ public class Fragment_5minute extends Fragment {
     private static FirebaseDatabase firebaseDatabase;
     private static DatabaseReference chartRef;
 
+    // send datas to Fragement_SumOfProfit
+    public static int lastX;
+    public static float lastY;
+
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +76,7 @@ public class Fragment_5minute extends Fragment {
 
         barChart = (BarChart) view.findViewById(R.id.bar_chart_5minute);
         firebaseDatabase = FirebaseDatabase.getInstance();
-        chartRef = firebaseDatabase.getReference("ChartValues");
+        chartRef = firebaseDatabase.getReference("Profit per 5 minutes");
 
         try {
 
@@ -80,9 +84,10 @@ public class Fragment_5minute extends Fragment {
             barDataSet.setValueTextColor(Color.RED);
             barDataSet.setValueTextSize(13);
             barDataSet.notifyDataSetChanged();
-            barData.notifyDataChanged();
 
             retrieveData();
+
+            barData.notifyDataChanged();
 
             barChart.setData(barData);
             barChart.setFitBars(true);
@@ -90,6 +95,8 @@ public class Fragment_5minute extends Fragment {
             barChart.animateY(2000);
             barChart.moveViewTo(barData.getEntryCount(), 50f, YAxis.AxisDependency.LEFT);
             barChart.invalidate();
+
+
 
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
@@ -132,6 +139,7 @@ public class Fragment_5minute extends Fragment {
         System.out.println("ask funds = " + askFunds);
 
         float profit = 0;
+
         // calculate profit
         if (bidFunds > askFunds) {
             profit = (float) (-(1 - askFunds / bidFunds) - 0.1);
@@ -186,29 +194,55 @@ public class Fragment_5minute extends Fragment {
 
     private static void addFiveMinutesBar(float profit) throws JSONException, NoSuchAlgorithmException, IOException {
 
-        BarData barData = barChart.getData(); // get data first
+        try {
+            barData = barChart.getData(); // get data first
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
         if (barData == null) {
             barData = new BarData();
             barChart.setData(barData);
+
+            System.out.println("barData is null");
+            System.out.println("barData : " + barData);
+            System.out.println("barDataSet : " + barDataSet);
+            System.out.println("barChart : " + barChart);
         }
 
         if (barDataSet == null) {
             barDataSet = new BarDataSet(null, "5 minutes");
             barData.addDataSet(barDataSet);
+
+            System.out.println("barDataSet is null");
+            System.out.println("barDataSet : " + barDataSet);
+            System.out.println("barData : " + barData);
+            System.out.println("barChart : " + barChart);
         }
 
         // get minute
         int minute = Calendar.getInstance().get(Calendar.MINUTE);
+        lastX = minute;
 
         // get profit
         float profitForChart = Float.parseFloat(profit + "f");
+        lastY = profitForChart;
+
+        System.out.println("barDataSet : " + barDataSet);
+        System.out.println("barData : " + barData);
+        System.out.println("barChart : " + barChart);
 
         barData.notifyDataChanged();
-        barChart.setData(barData);
-        barChart.notifyDataSetChanged();
-        barChart.setVisibleXRangeMaximum(6);
-        barChart.notifyDataSetChanged();
+
+        try {
+            barChart.setData(barData);
+            barChart.notifyDataSetChanged();
+            barChart.setVisibleXRangeMaximum(6);
+            barChart.notifyDataSetChanged();
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
         insertData(minute, profitForChart);
     }
@@ -229,8 +263,6 @@ public class Fragment_5minute extends Fragment {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                XAxis xAxis = barChart.getXAxis();
-
                 if (snapshot.getValue(BarChartData.class) != null) {
                     for (DataSnapshot eachSnapshot : snapshot.getChildren()) {
                         BarChartData barChartData = eachSnapshot.getValue(BarChartData.class);
@@ -241,12 +273,13 @@ public class Fragment_5minute extends Fragment {
                     barDataSet.notifyDataSetChanged();
                     barData.notifyDataChanged();
                     barChart.setData(barData);
-                    barChart.notifyDataSetChanged();
-                    //xAxis.setGranularity(5f);
                     barChart.setVisibleXRangeMinimum(6);
                     barChart.setVisibleXRangeMaximum(6);
                     barChart.setVisibleXRange(0, 60);
-                    System.out.println("(Fragment_5minute)barList: "+barList);
+                    System.out.println("(Fragment_5minute)barList: " + barList);
+                    barChart.notifyDataSetChanged();
+                    barChart.invalidate();
+
                 } else {
                     barChart.clear();
                     barChart.invalidate();
@@ -259,6 +292,12 @@ public class Fragment_5minute extends Fragment {
             }
         });
     }
+
+//    public static void saveListData() {
+//        int listSize = barList.size() - 1;
+//        lastX = (int) barList.get(listSize).getX();
+//        lastY = barList.get(listSize).getY();
+//    }
 
     @Override
     public void onDestroy() {
