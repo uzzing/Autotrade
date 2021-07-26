@@ -1,51 +1,48 @@
-package com.project.autotrade.Fragment;
+package com.project.autotrade;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.project.autotrade.GroupChatActivity;
-import com.project.autotrade.R;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class GroupsFragment extends Fragment {
+public class ChatActivity extends AppCompatActivity {
 
-    private View groupFragmentView;
+    private Toolbar toolbar;
     private ListView listView;
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> groupList = new ArrayList<>();
-
     private DatabaseReference GroupRef;
-
-    public GroupsFragment() {
-        // Required empty public constructor
-    }
+    private ActionBarDrawerToggle toggle;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        groupFragmentView = inflater.inflate(R.layout.fragment_groups, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chat);
+
         GroupRef = FirebaseDatabase.getInstance().getReference().child("Groups");
 
         initializeFields();
@@ -56,17 +53,21 @@ public class GroupsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 String currentGroupName = adapterView.getItemAtPosition(position).toString();
-                Intent groupChatIntent = new Intent(getContext(), GroupChatActivity.class);
+                Intent groupChatIntent = new Intent(ChatActivity.this, ChatRoomActivity.class);
                 groupChatIntent.putExtra("groupName", currentGroupName);
                 startActivity(groupChatIntent);
             }
         });
-        return groupFragmentView;
+
     }
 
     private void initializeFields() {
-        listView = groupFragmentView.findViewById(R.id.group_list);
-        arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, groupList);
+        listView = (ListView) findViewById(R.id.chat_group_list);
+        toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowCustomEnabled(false);
+        arrayAdapter = new ArrayAdapter<>(ChatActivity.this, android.R.layout.simple_list_item_1, groupList);
         listView.setAdapter(arrayAdapter);
     }
 
@@ -90,6 +91,6 @@ public class GroupsFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-
     }
+
 }

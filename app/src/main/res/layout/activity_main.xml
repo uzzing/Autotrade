@@ -35,12 +35,12 @@
 
                     <androidx.appcompat.widget.Toolbar
                         android:id="@+id/main_toolbar"
-
                         android:layout_width="match_parent"
                         android:layout_height="?attr/actionBarSize"
                         android:background="@android:color/white" />
                 </com.google.android.material.appbar.AppBarLayout>
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/main_tabs"
                 android:layout_width="match_parent"

@@ -35,14 +35,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private ViewPager viewPager;
     private TabLayout tabLayout;
-    private TabsAccessorAdapter tabsAccessorAdapter;
+//    private TabsAccessorAdapter tabsAccessorAdapter;
 
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private DatabaseReference RootRef;
 
     private ActionBarDrawerToggle toggle;
-    private boolean isDrawerOpened;
+
+    public MainActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +70,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initializeFields() {
 
-        viewPager = (ViewPager) findViewById(R.id.main_tabs_pager);
-        tabsAccessorAdapter = new TabsAccessorAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(tabsAccessorAdapter);
+//        viewPager = (ViewPager) findViewById(R.id.main_tabs_pager);
+//        tabsAccessorAdapter = new TabsAccessorAdapter(getSupportFragmentManager());
+//        viewPager.setAdapter(tabsAccessorAdapter);
 
         tabLayout = (TabLayout) findViewById(R.id.main_tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -110,18 +112,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        return super.onOptionsItemSelected(item);
 
         if (item.getItemId() == R.id.main_logout_option) {
-//            updateUserStatus("offline");
             auth.signOut();
             sendUserToLoginActivity();
         }
-        if (item.getItemId() == R.id.main_find_settings_options) {
-//            SendUserToSettingsActivity();
-        }
+
         if (item.getItemId() == R.id.main_create_group_option) {
             requestNewGroupChat();
-        }
-        if (item.getItemId() == R.id.main_find_friends_option) {
-//            SendUserToFindFriendsActivity();
         }
 
         return true;
@@ -219,10 +215,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
             startActivity(intent);
         }
-//        if (menuItem.getItemId() == R.id.chat) {
-//            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
-//            startActivity(intent);
-//        }
+        if (menuItem.getItemId() == R.id.chat) {
+            Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+            startActivity(intent);
+        }
         if (menuItem.getItemId() == R.id.trade_chart) {
             Intent intent = new Intent(getApplicationContext(), ChartActivity.class);
             startActivity(intent);
@@ -240,9 +236,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        return super.onOptionsItemSelected(item);
-//    }
 }
