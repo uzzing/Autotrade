@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".TradeActivity">
+
+    <EditText
+        android:id="@+id/edit_coinNm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter ticker" />
+
+    <Button
+        android:id="@+id/btn_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="주문" />
+
+    <Button
+        android:id="@+id/btn_oneMinute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1분 자동매매"
+        android:layout_gravity="center"
+        />
+
+    <Button
+        android:id="@+id/btn_fiveMinute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5분 자동매매"
+        android:layout_gravity="center"
+        />
+
+    <Button
+        android:id="@+id/btn_newFiveMinute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5분 자동매매 업그레이드 버전"
+        android:layout_gravity="center"
+        />
+
+    <Button
+        android:id="@+id/btn_getCurrent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="getCurrent"
+        android:layout_gravity="center"
+        />
+
+    <Button
+        android:id="@+id/btn_chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="chart"
+        android:layout_gravity="center"
+        />
+
+</LinearLayout>
