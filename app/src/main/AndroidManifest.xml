@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Autotrade">
+
         <activity android:name=".ChatActivity"/>
         <activity android:name=".ProgressbarActivity" />
         <activity android:name=".MainActivity">
@@ -32,6 +33,7 @@
         <activity android:name=".ChartActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".TradeActivity" />
+        <activity android:name=".AutoTradeActivity" />
     </application>
 
 </manifest>

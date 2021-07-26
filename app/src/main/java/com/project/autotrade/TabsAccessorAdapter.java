@@ -15,46 +15,53 @@ public class TabsAccessorAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int i) {
 
-        switch (i) {
-            case 0:
+//         switch (i) {
+//             case 0:
 //                ChatsFragment chatsFragment = new ChatsFragment();
 //                return chatsFragment;
 
-            case 1:
+//            case 1:
+//                GroupsFragment groupsFragment = new GroupsFragment();
+//                return groupsFragment;
+//
+//            case 2:
+//             case 1:
 //                GroupsFragment groupsFragment = new GroupsFragment();
 //                return groupsFragment;
 
-            case 2:
+//             case 2:
 //                ContactsFragment contactsFragment = new ContactsFragment();
 //                return contactsFragment;
 
-            default:
-                return null;
-        }
+//             default:
+//                 return null;
+//         }
+      return null;
     }
 
     @Override
     public int getCount() {
-        return 3;
+        return 1;
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
 
+        switch (position) {
+            case 0:
+                return "Chats";
 //        switch (position) {
 //            case 0:
 //                return "Chats";
-//
 //            case 1:
 //                return "Groups";
-//
 //            case 2:
 //                return "Contacts";
-//
-//            default:
-//                return null;
-//        }
+//             default:
+//                 return null;
+//         }
+
         return null;
     }
 }
