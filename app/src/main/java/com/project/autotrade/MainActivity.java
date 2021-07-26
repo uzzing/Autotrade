@@ -227,11 +227,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(getApplicationContext(), ChartActivity.class);
             startActivity(intent);
         }
-//        if (menuItem.getItemId() == R.id.mypage) {
-//            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
-//            startActivity(intent);
-//        }
-//
+        if (menuItem.getItemId() == R.id.mypage) {
+            Intent intent = new Intent(getApplicationContext(), AutoTradeActivity.class);
+            startActivity(intent);
+        }
+
 //        if (id == R.id.main_layout) {
 //            //getFragmentManager().beginTransaction().replace(R.id.main_tabs_pager, new ChatsFragment()).commit();
 //        }
