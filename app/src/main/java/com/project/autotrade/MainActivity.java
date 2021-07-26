@@ -1,448 +1,248 @@
 package com.project.autotrade;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.project.autotrade.chart.Fragment_5minute;
-import com.project.autotrade.chart.Fragment_SumOfProfit;
-import com.project.autotrade.trade.AutoTrade;
-import com.project.autotrade.trade.Client;
-import com.project.autotrade.trade.GetCurrent;
-import com.project.autotrade.trade.GetJson;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.viewpager.widget.ViewPager;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.text.NumberFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
+import org.jetbrains.annotations.NotNull;
 
-import cz.msebera.android.httpclient.util.EntityUtils;
+import java.util.Arrays;
 
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private Toolbar toolbar;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    private TabsAccessorAdapter tabsAccessorAdapter;
 
-public class MainActivity extends AppCompatActivity {
+    private FirebaseAuth auth;
+    private FirebaseUser currentUser;
+    private DatabaseReference RootRef;
 
-    private RequestQueue requestQueue;
-    private static final String TAG = "Main";
-    int value = 0;
+    private ActionBarDrawerToggle toggle;
+    private boolean isDrawerOpened;
 
-    private static BackgroundTask task; // used for autoTrade() in AutoTrade.class
-    private static BackgroundTask2 task2; // used for autoTradeOneMinute() in AutoTrade.class
-    private static BackgroundTask3 task3; // used for autoTradeFiveMinute() in AutoTrade.class
-    private static BackgroundTask4 task4; // used for newAutoTradeFiveMinute() in AutoTrade.class
-
-    private static String currentPrice; // send to autoTrade() in AutoTrade.class
-    private static String targetPrice; // send to autoTrade() in AutoTrade.class
-    private static String coinNm; // send to autoTrade() in AutoTrade.class
-    private static ArrayList<HashMap<String, String>> tradePriceList;
-    AutoTrade autoTrade = new AutoTrade();
-    GetJson getJson = new GetJson();
-
-    EditText edit_coinNm;
-
-    // <-- function -->
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // general task
-        Button btn_order = findViewById(R.id.btn_order);
-        btn_order.setOnClickListener(new View.OnClickListener() {
+        toolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+
+        // get account data
+        auth = FirebaseAuth.getInstance();
+        currentUser = auth.getCurrentUser();
+        RootRef = FirebaseDatabase.getInstance().getReference();
+
+        // toolbar
+//        getSupportActionBar().setTitle("AutoTradeApp");
+        setUpNavigationDrawer();
+
+        initializeFields();
+
+    }
+
+    private void initializeFields() {
+
+        viewPager = (ViewPager) findViewById(R.id.main_tabs_pager);
+        tabsAccessorAdapter = new TabsAccessorAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(tabsAccessorAdapter);
+
+        tabLayout = (TabLayout) findViewById(R.id.main_tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (currentUser == null) {
+            sendUserToLoginActivity();
+        } else {
+            MyData.name = Arrays.stream(currentUser.getEmail().split("@")).findFirst().get();
+        }
+    }
+
+    private void sendUserToLoginActivity() {
+        Intent loginIntent = new Intent(MainActivity.this, com.project.autotrade.LoginActivity.class);
+        startActivity(loginIntent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+//        if (toggle.onOptionsItemSelected(item)) return true;
+//        return super.onOptionsItemSelected(item);
+
+        if (item.getItemId() == R.id.main_logout_option) {
+//            updateUserStatus("offline");
+            auth.signOut();
+            sendUserToLoginActivity();
+        }
+        if (item.getItemId() == R.id.main_find_settings_options) {
+//            SendUserToSettingsActivity();
+        }
+        if (item.getItemId() == R.id.main_create_group_option) {
+            requestNewGroupChat();
+        }
+        if (item.getItemId() == R.id.main_find_friends_option) {
+//            SendUserToFindFriendsActivity();
+        }
+
+        return true;
+    }
+
+    private void requestNewGroupChat() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialog);
+        builder.setTitle("Enter group name : ");
+
+        final EditText groupNameField = new EditText(MainActivity.this);
+        groupNameField.setHint("Group chat name");
+        builder.setView(groupNameField);
+
+        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                edit_coinNm = findViewById(R.id.edit_coinNm);
+            public void onClick(DialogInterface dialog, int which) {
+                String groupName = groupNameField.getText().toString();
 
-                coinNm = edit_coinNm.getText().toString().toUpperCase();
-
-                if (!coinNm.isEmpty()) {
-                    task = new BackgroundTask();
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
+                if (TextUtils.isEmpty(groupName))
+                    Toast.makeText(MainActivity.this, "Please enter group Name", Toast.LENGTH_SHORT).show();
+                else
+                    createNewGroup(groupName);
             }
         });
 
-        // autoTradeOneMinute task
-        Button btn_oneMinute = findViewById(R.id.btn_oneMinute);
-        btn_oneMinute.setOnClickListener(new View.OnClickListener() {
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                //task.cancel(true);
-                task2 = new BackgroundTask2();
-                task2.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
             }
         });
 
-        // autoTradeFiveMinute task
-        Button btn_fiveMinute = findViewById(R.id.btn_fiveMinute);
-        btn_fiveMinute.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                task3 = new BackgroundTask3();
-                task3.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-            }
-        });
-
-        // newAutoTradeFiveMinute task
-        Button btn_newFiveMinute = findViewById(R.id.btn_newFiveMinute);
-        btn_newFiveMinute.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                task4 = new BackgroundTask4();
-                task4.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-            }
-        });
-
-        // get current
-        Button btn_getCurrent = findViewById(R.id.btn_getCurrent);
-        btn_getCurrent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), GetCurrent.class);
-                startActivity(intent);
-            }
-        });
-
-        // go to chart activity
-        Button btn_chart = findViewById(R.id.btn_chart);
-        btn_chart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ChartActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(getApplicationContext());
-        }
-
-    } // onCreate
-
-    // Main thread
-    class BackgroundTask extends AsyncTask<Integer, String, Integer> {
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
-        @Override
-        protected Integer doInBackground(Integer... values) {
-
-            try {
-                getOrderBookData(coinNm);
-                getTickerData(coinNm);
-
-                Thread.sleep(1000);
-
-                AutoTradeThread autoTradeThread = new AutoTradeThread();
-                autoTradeThread.run();
-
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-            return value;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-        }
-
-        @Override
-        protected void onCancelled() {
-        }
+        builder.show();
     }
 
-    // Thread that used in BackgroundTask.class
-    class AutoTradeThread implements Runnable {
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    Thread.sleep(1000);
-                    LocalDateTime now = LocalDateTime.now().withNano(0);
-                    autoTrade.autoTrade(coinNm, currentPrice, targetPrice, now);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // autoTradeOneMinute
-    class BackgroundTask2 extends AsyncTask<Integer, String, Integer> {
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
-        @Override
-        protected Integer doInBackground(Integer... values) {
-
-            try {
-                getJson.getTopTenCoin(); // get all coins name & top ten coins list
-
-                Thread.sleep(1000);
-                AutoTradeOneMinuteThread autoTradeOneMinuteThread = new AutoTradeOneMinuteThread();
-                autoTradeOneMinuteThread.run();
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return value;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-        }
-
-        @Override
-        protected void onCancelled() {
-        }
-    }
-
-    // Thread that used in BackgroundTask2.class
-    class AutoTradeOneMinuteThread implements Runnable {
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    getJson.getFinalCoin(1);
-
-                    getTickerData(GetJson.coinName.substring(4));
-                    Thread.sleep(1000);
-
-                    autoTrade.autoTradeOneMinute();
-                }
-            } catch (InterruptedException | NoSuchAlgorithmException | JSONException | IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // autoTradeFiveMinute
-    class BackgroundTask3 extends AsyncTask<Integer, String, Integer> {
-        @Override
-        protected void onPreExecute() {
-        }
-        @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
-        @Override
-        protected Integer doInBackground(Integer... values) {
-            try {
-                getJson.getTopTenCoin(); // set the global data 'tradeTopTenCoin'
-                Thread.sleep(1000);
-
-                AutoTradeFiveMinuteThread autoTradeFiveMinuteThread = new AutoTradeFiveMinuteThread();
-                autoTradeFiveMinuteThread.run();
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return value;
-        }
-        @Override
-        protected void onProgressUpdate(String... values) {
-        }
-        @Override
-        protected void onPostExecute(Integer integer) {
-        }
-        @Override
-        protected void onCancelled() {
-        }
-    }
-    // Thread that used in BackgroundTask3.class
-    class AutoTradeFiveMinuteThread implements Runnable {
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    getJson.getFinalCoin(5); // set the global data 'coinName'
-                    getTickerData(GetJson.coinName.substring(4));
-                    Thread.sleep(1000);
-
-                    autoTrade.autoTradeFiveMinute();
-                }
-            } catch (InterruptedException | NoSuchAlgorithmException | JSONException | IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // newAutoTradeFiveMinute
-    class BackgroundTask4 extends AsyncTask<Integer, String, Integer> {
-        @Override
-        protected void onPreExecute() {
-        }
-        @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
-        @Override
-        protected Integer doInBackground(Integer... values) {
-            try {
-                getJson.getTopTenCoin(); // set the global data 'tradeTopTenCoin'
-                getJson.getRecentTradeVolume(); // set the global data 'recentVolumeTenCoin'
-
-                Thread.sleep(1000);
-
-                NewAutoTradeFiveMinuteThread newAutoTradeFiveMinuteThread = new NewAutoTradeFiveMinuteThread();
-                newAutoTradeFiveMinuteThread.run();
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return value;
-        }
-        @Override
-        protected void onProgressUpdate(String... values) {
-        }
-        @Override
-        protected void onPostExecute(Integer integer) {
-        }
-        @Override
-        protected void onCancelled() {
-        }
-    }
-
-    // Thread that used in BackgroundTask4.class
-    class NewAutoTradeFiveMinuteThread implements Runnable {
-        @Override
-        public void run() {
-            try {
-                while (true) {
-
-                    tradePriceList = new ArrayList<>();
-                    for (int i = 0; i < 5; i++) {
-                        tradePriceList = new GetJson().getTradePrice(tradePriceList);
-                        Thread.sleep(1000);
-                    }
-
-                    Thread.sleep(1000);
-                    String finalCoinNm = getJson.getNewFinalCoin(tradePriceList);
-                    autoTrade.newAutoTradeFiveMinute(finalCoinNm);
-                    Fragment_5minute.calculateProfit();
-                    Fragment_SumOfProfit.calculateSumOfProfit();
-
-                    Thread.sleep(1000);
-                }
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // Http communication by using Volley library
-    public void getOrderBookData(String coinNm) {
-
-        final String sCoinNm = coinNm;
-
-        String url = "https://api.upbit.com/v1/orderbook?markets=KRW-" + sCoinNm;
-
-        StringRequest request = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
+    private void createNewGroup(String groupName) {
+        RootRef.child("Groups").child(groupName).setValue("")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onResponse(String response) {
-                        GetJson getJson = new GetJson();
-                        currentPrice = getJson.getCurrentPrice(response);
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful())
+                            Toast.makeText(MainActivity.this, groupName + " group is created successfully", Toast.LENGTH_SHORT).show();
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "onErrorResponse: " + error.getMessage());
-                    }
-                }) {
-        };
-        request.setShouldCache(false);
-        requestQueue.add(request);
-    } // getOrderBooks
-
-    // Http communication by using Volley library
-    public void getTickerData(String coinNm) {
-
-        final String sCoinNm = coinNm;
-
-        String url = "https://api.upbit.com/v1/ticker?markets=KRW-" + sCoinNm;
-        StringRequest request = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        GetJson getJson = new GetJson();
-                        HashMap<String, Double> data = getJson.getTickerData(response); //get values
-                        double openingPrice = data.get("openingPrice");
-                        double highPrice = data.get("highPrice");
-                        double lowPrice = data.get("lowPrice");
-
-                        NumberFormat format = NumberFormat.getInstance();
-                        format.setGroupingUsed(false);
-                        targetPrice = format.format(openingPrice + (highPrice - lowPrice) * 0.3);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "onErrorResponse: " + error.getMessage());
-                    }
-                }) {
-        };
-        request.setShouldCache(false);
-        requestQueue.add(request);
+                });
     }
+
+    private void setUpNavigationDrawer() {
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        toggle = new ActionBarDrawerToggle (
+                this, drawer,toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        {
+//            @Override
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//                isDrawerOpened = true;
+//            }
+//
+//            @Override
+//            public void onDrawerClosed(View drawerView) {
+//                super.onDrawerClosed(drawerView);
+//                isDrawerOpened = false;
+//            }
+//        };
+        drawer.addDrawerListener(toggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toggle.syncState();
+
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem menuItem) {
+        int id = menuItem.getItemId();
+
+//        if (menuItem.getItemId() == R.id.home) {
+//            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
+//            startActivity(intent);
+//        }
+        if (menuItem.getItemId() == R.id.autotrade) {
+            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
+            startActivity(intent);
+        }
+//        if (menuItem.getItemId() == R.id.chat) {
+//            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
+//            startActivity(intent);
+//        }
+        if (menuItem.getItemId() == R.id.trade_chart) {
+            Intent intent = new Intent(getApplicationContext(), ChartActivity.class);
+            startActivity(intent);
+        }
+//        if (menuItem.getItemId() == R.id.mypage) {
+//            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
+//            startActivity(intent);
+//        }
+//
+//        if (id == R.id.main_layout) {
+//            //getFragmentManager().beginTransaction().replace(R.id.main_tabs_pager, new ChatsFragment()).commit();
+//        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        return super.onOptionsItemSelected(item);
+//    }
 }
