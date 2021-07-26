@@ -16,12 +16,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -42,9 +44,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class GroupChatActivity extends AppCompatActivity {
+public class ChatRoomActivity extends AppCompatActivity {
 
     // ui
+    private Toolbar toolbar;
     private ImageButton sendMessageButton, sendImageButton;
     private EditText messageInput;
     private ScrollView scrollView;
@@ -75,8 +78,7 @@ public class GroupChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_chat);
-
+        setContentView(R.layout.activity_chatroom);
 
         // show groupName on alert
         currentGroupName = getIntent().getExtras().get("groupName").toString();
@@ -97,7 +99,6 @@ public class GroupChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 saveMessageInfoToDatabase();
-
                 messageInput.setText("");
             }
         });
@@ -108,10 +109,10 @@ public class GroupChatActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // select file format
-                CharSequence options[] = new CharSequence[] { "Image", "PDF", "Docx" };
+                CharSequence options[] = new CharSequence[] { "Image" };
 
                 // show options in alert
-                AlertDialog.Builder builder = new AlertDialog.Builder(GroupChatActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ChatRoomActivity.this);
 
                 builder.setTitle("Select the file");
 
@@ -130,12 +131,6 @@ public class GroupChatActivity extends AppCompatActivity {
                             // choose an image in images app
                             startActivityForResult(Intent.createChooser(intent, "Select image"), 438);
 
-                        }
-                        else if (i == 1) {
-                            checker = "pdf";
-                        }
-                        else if (i == 2) {
-                            checker = "docx";
                         }
                     }
                 });
@@ -173,7 +168,10 @@ public class GroupChatActivity extends AppCompatActivity {
     private void initializeFields() {
 
         // toolbar name
-//        getSupportActionBar().setTitle(currentGroupName);
+        toolbar = (Toolbar) findViewById(R.id.chatroom_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setTitle(currentGroupName);
 
         // show message list
         messageListView = (RecyclerView) findViewById(R.id.all_message_display);
@@ -313,11 +311,11 @@ public class GroupChatActivity extends AppCompatActivity {
                                 messageInfoMap.put("type", checker);
                                 GroupMessageKeyRef.updateChildren(messageInfoMap);
 
-                                Toast.makeText(GroupChatActivity.this, "Sent file successfully", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ChatRoomActivity.this, "Sent Image successfully", Toast.LENGTH_SHORT).show();
                             }
                             else { // if it's not successful
                                 String message = task.getException().toString();
-                                Toast.makeText(GroupChatActivity.this, "Error : " + message, Toast.LENGTH_LONG).show();
+                                Toast.makeText(ChatRoomActivity.this, "Error : " + message, Toast.LENGTH_LONG).show();
                             }
                             loadingBar.dismiss();
                             messageInput.setText(""); // reset message box

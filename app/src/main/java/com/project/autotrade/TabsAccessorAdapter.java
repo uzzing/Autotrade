@@ -5,9 +5,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.project.autotrade.Fragment.ChatsFragment;
-import com.project.autotrade.Fragment.ContactsFragment;
-import com.project.autotrade.Fragment.GroupsFragment;
 
 public class TabsAccessorAdapter extends FragmentPagerAdapter {
 
@@ -18,22 +15,28 @@ public class TabsAccessorAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int i) {
 
-        switch (i) {
-            case 0:
-                ChatsFragment chatsFragment = new ChatsFragment();
-                return chatsFragment;
+//         switch (i) {
+//             case 0:
+//                ChatsFragment chatsFragment = new ChatsFragment();
+//                return chatsFragment;
 
 //            case 1:
 //                GroupsFragment groupsFragment = new GroupsFragment();
 //                return groupsFragment;
 //
 //            case 2:
+//             case 1:
+//                GroupsFragment groupsFragment = new GroupsFragment();
+//                return groupsFragment;
+
+//             case 2:
 //                ContactsFragment contactsFragment = new ContactsFragment();
 //                return contactsFragment;
 
-            default:
-                return null;
-        }
+//             default:
+//                 return null;
+//         }
+      return null;
     }
 
     @Override
@@ -48,15 +51,17 @@ public class TabsAccessorAdapter extends FragmentPagerAdapter {
         switch (position) {
             case 0:
                 return "Chats";
-//
+//        switch (position) {
+//            case 0:
+//                return "Chats";
 //            case 1:
 //                return "Groups";
-//
 //            case 2:
 //                return "Contacts";
+//             default:
+//                 return null;
+//         }
 
-            default:
-                return null;
-        }
+        return null;
     }
 }
