@@ -7,46 +7,58 @@
     android:background="@color/blue_200"
     tools:context=".ChatRoomActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/chatroom_toolbar"
+    <LinearLayout
+        android:id="@+id/chatroom_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/blue_300"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:orientation="horizontal"
+        android:background="@color/blue_300">
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/toolbar_title"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_gravity="left"-->
+        <ImageButton
+            android:id="@+id/chatroom_goback"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/chatroom_back"
+            android:background="@android:color/transparent"
+            android:layout_marginLeft="5dp"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            app:tint="@color/white"></ImageButton>
 
-        <!--            android:textSize="17sp"-->
-        <!--            android:textColor="@color/white"-->
-        <!--            android:textStyle="bold" />-->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/chatroom_toolbar"
+            android:layout_width="290dp"
+            android:layout_height="wrap_content"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        </androidx.appcompat.widget.Toolbar>
 
-<!--        <ImageView-->
-<!--            android:id="@+id/chatroom_people"-->
-<!--            android:layout_width="23dp"-->
-<!--            android:layout_height="23dp"-->
-<!--            android:layout_marginLeft="20dp"-->
-<!--            android:src="@drawable/chat_people"-->
-<!--            app:tint="@color/white"></ImageView>-->
+        <ImageView
+            android:id="@+id/chatroom_image"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/chat_people"
+            app:tint="@color/white"></ImageView>
 
-<!--        <TextView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="3dp"-->
-<!--            android:text="5"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textSize="18sp"-->
-<!--            android:textStyle="bold"></TextView>-->
-    </androidx.appcompat.widget.Toolbar>
+        <TextView
+            android:id="@+id/chatroom_people"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="3dp"
+            android:text="5"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"></TextView>
+
+    </LinearLayout>
 
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/chatroom_toolbar"
+        android:layout_below="@+id/chatroom_top"
         android:layout_above="@+id/linearLayout">
 
         <!-- message list -->

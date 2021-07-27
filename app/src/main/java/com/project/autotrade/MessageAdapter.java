@@ -18,13 +18,13 @@ import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
-    private List<com.project.autotrade.MessageItem> messagesList;
+    private List<MessageItem> messagesList;
     private String currentGroupName;
 
     // get chat data
     private FirebaseAuth auth;
 
-    public MessageAdapter(List<com.project.autotrade.MessageItem> messagesList, String currentGroupName) {
+    public MessageAdapter(List<MessageItem> messagesList, String currentGroupName) {
         this.messagesList = messagesList;
         this.currentGroupName = currentGroupName;
     }
@@ -91,14 +91,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     @Override
     public void onBindViewHolder(@NonNull @NotNull MessageAdapter.MessageViewHolder messageViewHolder, int position) {
 
-        com.project.autotrade.MessageItem messages = messagesList.get(position);
+        MessageItem messages = messagesList.get(position);
         String name = messages.getName();
         String messageTime = messages.getTime();
         String type = messages.getType();
 
         if (type.equals("text")) {
             // if sender is me
-            if (name.equals(com.project.autotrade.MyData.name)) {
+            if (name.equals(MyData.name)) {
                 messageViewHolder.myMessage.setText(messages.getMessage());
                 messageViewHolder.myMessageTime.setText(messageTime);
             }
@@ -112,7 +112,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         else if (type.equals("image")) {
 
             // if sender is me
-            if (name.equals(com.project.autotrade.MyData.name)) {
+            if (name.equals(MyData.name)) {
                 messageViewHolder.myMessage.setVisibility(View.INVISIBLE);
                 messageViewHolder.myMessageTail.setVisibility(View.INVISIBLE);
                 messageViewHolder.myMessageTime.setText(messageTime);
@@ -133,7 +133,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public int getItemViewType(int position) {
-        if (messagesList.get(position).getName().equals(com.project.autotrade.MyData.name))
+        if (messagesList.get(position).getName().equals(MyData.name))
             return 1;
         else
             return 2;
