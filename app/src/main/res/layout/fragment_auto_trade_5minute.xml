@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="CryptoFragment.AutoTrade_5minute">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/autotrade_5min_text"
+        android:text="5min" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_start_5min"
+        android:id="@+id/et_timer_5min"
+        android:hint="Enter value"
+        android:inputType="number"/>
+
+    <ProgressBar
+        android:id="@+id/view_progress_bar_5min"
+        style="@style/CircularDeterminateProgressBar"
+        android:layout_width="250dp"
+        android:indeterminateOnly="false"
+        android:layout_height="250dp"
+        android:layout_gravity="center"
+        android:layout_centerInParent="true"
+        android:progressDrawable="@drawable/drawable_circularprogressbar" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_timer_5min"
+        android:layout_centerInParent="true"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_start_5min"
+        android:text="Start Timer"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

@@ -2,17 +2,35 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:title="Create Group"
-        android:id="@+id/main_create_group_option"
-        app:showAsAction="never"
-        >
-    </item>
+<!--    <item-->
+<!--        android:title="Create Group"-->
+<!--        android:id="@+id/main_create_group_option"-->
+<!--        app:showAsAction="never"-->
+<!--        >-->
+<!--    </item>-->
 
+<!--    <item-->
+<!--        android:title="Logout"-->
+<!--        android:id="@+id/main_logout_option"-->
+<!--        app:showAsAction="never"-->
+<!--        >-->
+<!--    </item>-->
     <item
-        android:title="Logout"
-        android:id="@+id/main_logout_option"
-        app:showAsAction="never"
-        >
+        android:id="@+id/overflowMenu"
+        android:icon="@drawable/menu_icon"
+        android:title="dd"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:title="Create Group"
+                android:id="@+id/main_create_group_option"
+                app:showAsAction="never"
+                />
+            <item
+                android:title="Logout"
+                android:id="@+id/main_logout_option"
+                app:showAsAction="never"
+                />
+        </menu>
     </item>
 </menu>

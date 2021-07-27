@@ -11,36 +11,35 @@
         android:id="@+id/chatroom_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/blue_300">
+        android:background="@color/blue_300"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:text="Group chat name"
-            android:textSize="17sp"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+        <!--        <TextView-->
+        <!--            android:id="@+id/toolbar_title"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="left"-->
 
-        <ImageView
-            android:id="@+id/chatroom_people"
-            android:layout_width="23dp"
-            android:layout_height="23dp"
-            android:src="@drawable/chat_people"
-            android:layout_marginLeft="20dp"
-            app:tint="@color/white">
-        </ImageView>
+        <!--            android:textSize="17sp"-->
+        <!--            android:textColor="@color/white"-->
+        <!--            android:textStyle="bold" />-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
-            android:text="5"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold">
-        </TextView>
+<!--        <ImageView-->
+<!--            android:id="@+id/chatroom_people"-->
+<!--            android:layout_width="23dp"-->
+<!--            android:layout_height="23dp"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:src="@drawable/chat_people"-->
+<!--            app:tint="@color/white"></ImageView>-->
+
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginLeft="3dp"-->
+<!--            android:text="5"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="18sp"-->
+<!--            android:textStyle="bold"></TextView>-->
     </androidx.appcompat.widget.Toolbar>
 
     <ScrollView

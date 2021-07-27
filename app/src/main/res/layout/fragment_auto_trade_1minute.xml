@@ -1,0 +1,46 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="CryptoFragment.AutoTrade_1minute">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="1min" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_start_1min"
+        android:id="@+id/et_timer_1min"
+        android:hint="Enter value"
+        android:inputType="number"/>
+
+    <ProgressBar
+        android:id="@+id/view_progress_bar_1min"
+        style="@style/CircularDeterminateProgressBar"
+        android:layout_width="350dp"
+        android:indeterminateOnly="false"
+        android:layout_height="450dp"
+        android:layout_gravity="center"
+        android:layout_centerInParent="true"
+        android:progressDrawable="@drawable/drawable_circularprogressbar" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_timer_1min"
+        android:layout_centerInParent="true"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_start_1min"
+        android:text="Start Timer"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>
