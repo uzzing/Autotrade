@@ -82,9 +82,11 @@ public class ChatActivity extends AppCompatActivity {
     private void initializeFields() {
         listView = (ListView) findViewById(R.id.chat_group_list);
         toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayShowCustomEnabled(false);
+
         arrayAdapter = new ArrayAdapter<>(ChatActivity.this, android.R.layout.simple_list_item_1, groupList);
         listView.setAdapter(arrayAdapter);
     }

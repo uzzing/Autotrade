@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MyPageActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_mypage"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/blue_300" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MY PAGE"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:id="@+id/toolbar_mypage_title"
+            android:textSize="17sp"
+            />
+    </androidx.appcompat.widget.Toolbar>
+
+    <ImageView
+        android:id="@+id/mypage_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/mypage_logo"
+        android:layout_alignParentStart="true"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="100dp"
+        app:tint="@color/black"
+        />
+
+    <TextView
+        android:id="@+id/mypage_accesskey"
+        android:layout_width="match_parent"
+        android:layout_height="40sp"
+        android:layout_below="@+id/toolbar_mypage"
+        android:layout_marginTop="250dp"
+        android:gravity="center"
+        android:text="Access Key"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold">
+
+    </TextView>
+
+    <EditText
+        android:id="@+id/edittext_accesskey"
+        android:layout_width="350dp"
+        android:layout_height="35dp"
+        android:layout_below="@+id/mypage_accesskey"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="13dp"
+
+        android:background="@drawable/edittext_border"
+        android:textSize="17sp"></EditText>
+
+    <TextView
+        android:id="@+id/mypage_secretkey"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edittext_accesskey"
+        android:text="Secret Key"
+        android:gravity="center"
+        android:layout_marginTop="13dp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"></TextView>
+
+    <EditText
+        android:id="@+id/edittext_secretkey"
+        android:layout_width="350dp"
+        android:layout_height="35dp"
+        android:layout_below="@+id/mypage_secretkey"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="13dp"
+        android:background="@drawable/edittext_border"
+        android:textSize="17sp"></EditText>
+
+    <Button
+        android:id="@+id/mypage_button"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edittext_secretkey"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="157dp"
+        android:text="SAVE"
+        android:textColor="@color/white"
+        android:background="@drawable/button_radius"
+        android:layout_marginTop="45dp"
+        ></Button>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="For trading cyrpto in upbit\n
+you must input your access key and secret key here.\n
+You can receive those keys in upbit developer site.
+"
+        android:layout_below="@+id/mypage_button"
+        android:textAlignment="center"
+        android:textColor="@color/gray"
+        android:layout_marginTop="30dp"
+        ></TextView>
+
+</RelativeLayout>

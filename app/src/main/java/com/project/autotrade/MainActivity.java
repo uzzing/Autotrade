@@ -211,10 +211,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem menuItem) {
         int id = menuItem.getItemId();
 
-//        if (menuItem.getItemId() == R.id.home) {
-//            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
-//            startActivity(intent);
-//        }
+        if (menuItem.getItemId() == R.id.home) {
+            Intent intent = new Intent(getApplicationContext(), AutoTradeActivity.class);
+            startActivity(intent);
+        }
         if (menuItem.getItemId() == R.id.autotrade) {
             Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
             startActivity(intent);
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
         }
         if (menuItem.getItemId() == R.id.mypage) {
-            Intent intent = new Intent(getApplicationContext(), AutoTradeActivity.class);
+            Intent intent = new Intent(getApplicationContext(), MyPageActivity.class);
             startActivity(intent);
         }
 
