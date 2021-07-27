@@ -170,7 +170,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         // toolbar name
         toolbar = (Toolbar) findViewById(R.id.chatroom_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setTitle(currentGroupName);
 
         // show message list

@@ -36,7 +36,7 @@ public class TabsAccessorAdapter extends FragmentPagerAdapter {
 //             default:
 //                 return null;
 //         }
-      return null;
+        return null;
     }
 
     @Override
@@ -44,24 +44,26 @@ public class TabsAccessorAdapter extends FragmentPagerAdapter {
         return 1;
     }
 
-    @Nullable
-    @Override
-    public CharSequence getPageTitle(int position) {
-
-        switch (position) {
-            case 0:
-                return "Chats";
-//        switch (position) {
-//            case 0:
-//                return "Chats";
-//            case 1:
-//                return "Groups";
-//            case 2:
-//                return "Contacts";
-//             default:
-//                 return null;
-//         }
-
-        return null;
-    }
+//    @Nullable
+//    @Override
+//    public CharSequence getPageTitle(int position) {
+//
+////        switch (position) {
+////            case 0:
+////                return "Chats";
+//////        switch (position) {
+//////            case 0:
+//////                return "Chats";
+//////            case 1:
+//////                return "Groups";
+//////            case 2:
+//////                return "Contacts";
+//////             default:
+//////                 return null;
+//////         }
+////
+////            return null;
+////        }
+//
+//    }
 }
