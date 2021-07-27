@@ -29,7 +29,6 @@ public class GroupListItemView extends LinearLayout {
     // initialize
     private void init(Context context) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         inflater.inflate(R.layout.activity_chat_grouplist, this, true);
 
         groupNameText = (TextView) findViewById(R.id.chat_grouplist_name);
