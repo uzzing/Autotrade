@@ -86,6 +86,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void initializeFields() {
         toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
+
         listView = (ListView) findViewById(R.id.chat_grouplist);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

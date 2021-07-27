@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:tabIndicatorColor="@android:color/white"
+            app:tabIndicatorColor="@color/blue_300"
             app:tabTextColor="@color/gray"
             app:tabSelectedTextColor="@color/blue_300"
             android:background="@color/white"

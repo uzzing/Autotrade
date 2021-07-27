@@ -115,6 +115,11 @@ public class ChartActivity extends AppCompatActivity {
 
             }
         });
+
+        // 드롭다운 클릭 시 선택 창
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // 스피너에 어댑터 설정
+        spinner.setAdapter(adapter);
     }
 
     private void setFragment(Fragment fragment) {
@@ -123,4 +128,6 @@ public class ChartActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
     }
+
+
 }
