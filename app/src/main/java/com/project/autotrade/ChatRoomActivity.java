@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -47,15 +49,20 @@ import java.util.List;
 public class ChatRoomActivity extends AppCompatActivity {
 
     // ui
+    private ImageButton goBackToggle;
     private Toolbar toolbar;
+    private TextView userCountView;
     private ImageButton sendMessageButton, sendImageButton;
     private EditText messageInput;
     private ScrollView scrollView;
     private ProgressDialog loadingBar;
 
+    // get user count
+    private static String userCount;
+
     // get user info
     private FirebaseAuth auth;
-    private DatabaseReference UserRef, GroupNameRef, GroupMessageKeyRef;
+    private DatabaseReference UserRef, UserCountRef, GroupNameRef, GroupMessageKeyRef;
     private String currentGroupName;
     private String currentUserID;
 
@@ -82,19 +89,124 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         // show groupName on alert
         currentGroupName = getIntent().getExtras().get("groupName").toString();
-        Toast.makeText(this, currentGroupName, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "You joined " + currentGroupName, Toast.LENGTH_SHORT).show();
+
+        // get user count
+        userCount = getIntent().getExtras().get("userCount").toString();
 
         // set user, group database
         auth = FirebaseAuth.getInstance();
         currentUserID = Arrays.stream(auth.getCurrentUser().getEmail().split("@")).findFirst().get();
         UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        GroupNameRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(currentGroupName);
+        UserCountRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(currentGroupName).child("User count");
+        GroupNameRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(currentGroupName).child("Messages");
 
         initializeFields();
 
         getUserInfo();
 
-        // send message button activity
+        updateUserCount();
+
+        sendingButtons();
+
+        leaveChatRoom();
+
+        GroupNameRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) {
+                messageAdapter = new MessageAdapter(messagesList, currentGroupName);
+                MessageItem messages = snapshot.getValue(MessageItem.class);
+                messagesList.add(messages);
+                messageAdapter.notifyDataSetChanged();
+                messageListView.setAdapter(messageAdapter);
+                messageListView.scrollToPosition(messagesList.size()-1);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) { }
+
+            @Override
+            public void onChildRemoved(@NonNull @NotNull DataSnapshot snapshot) { }
+
+            @Override
+            public void onChildMoved(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) { }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) { }
+        });
+    }
+
+    private void initializeFields() {
+
+        // toolbar - toggle that can go chat home back
+        goBackToggle = (ImageButton) findViewById(R.id.chatroom_goback);
+
+        // toolbar - name
+        toolbar = (Toolbar) findViewById(R.id.chatroom_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(currentGroupName);
+
+        // toolbar - user count
+        userCountView = (TextView) findViewById(R.id.chatroom_people);
+        userCountView.setText(userCount);
+        UserCountRef.setValue(userCount);
+
+        // show message list
+        messageListView = (RecyclerView) findViewById(R.id.all_message_display);
+        linearLayoutManager = new LinearLayoutManager(this);
+        messageListView.setLayoutManager(linearLayoutManager);
+
+        // the below
+        sendImageButton = (ImageButton) findViewById(R.id.chat_send_image);
+        messageInput = (EditText) findViewById(R.id.input_message);
+        sendMessageButton = (ImageButton) findViewById(R.id.chat_send_message);
+        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+
+        // loading bar
+        loadingBar = new ProgressDialog(this);
+
+    }
+
+    private void updateUserCount() {
+
+        UserCountRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                    String changedUserCount = snapshot.getValue().toString();
+                    userCount = changedUserCount;
+                    userCountView.setText(userCount);
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    // for saveMessageInfoToDatabase()
+    private void getUserInfo() {
+
+        UserRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                // didn't program
+                if (snapshot.exists()) {
+                    currentUserID = snapshot.child("name").getValue().toString();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void sendingButtons() {
+
+        // send message button
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,7 +215,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         });
 
-        // send image button activity
+        // send image button
         sendImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,72 +251,17 @@ public class ChatRoomActivity extends AppCompatActivity {
 
             }
         });
-
-        GroupNameRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) {
-                messageAdapter = new MessageAdapter(messagesList, currentGroupName);
-                MessageItem messages = snapshot.getValue(MessageItem.class);
-                messagesList.add(messages);
-                messageAdapter.notifyDataSetChanged();
-                messageListView.setAdapter(messageAdapter); // declared twice
-                messageListView.scrollToPosition(messagesList.size()-1);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) { }
-
-            @Override
-            public void onChildRemoved(@NonNull @NotNull DataSnapshot snapshot) { }
-
-            @Override
-            public void onChildMoved(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) { }
-
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) { }
-        });
     }
 
-    private void initializeFields() {
+    private void leaveChatRoom() {
 
-        // toolbar name
-        toolbar = (Toolbar) findViewById(R.id.chatroom_toolbar);
-        setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setTitle(currentGroupName);
-
-        // show message list
-        messageListView = (RecyclerView) findViewById(R.id.all_message_display);
-        linearLayoutManager = new LinearLayoutManager(this);
-        messageListView.setLayoutManager(linearLayoutManager);
-
-        // the below
-        sendImageButton = (ImageButton) findViewById(R.id.chat_send_image);
-        messageInput = (EditText) findViewById(R.id.input_message);
-        sendMessageButton = (ImageButton) findViewById(R.id.chat_send_message);
-        scrollView = (ScrollView) findViewById(R.id.scroll_view);
-
-        // loading bar
-        loadingBar = new ProgressDialog(this);
-
-    }
-
-    // for saveMessageInfoToDatabase()
-    private void getUserInfo() {
-
-        UserRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+        goBackToggle.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                // didn't program
-                if (snapshot.exists()) {
-                    currentUserID = snapshot.child("name").getValue().toString();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onClick(View view) {
+                userCount = String.valueOf(Integer.parseInt(userCount) - 1);
+                UserCountRef.setValue(userCount);
+                Toast.makeText(getApplicationContext(), "You left " + currentGroupName, Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }
