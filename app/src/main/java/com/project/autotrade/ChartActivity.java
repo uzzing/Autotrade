@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -66,12 +67,21 @@ public class ChartActivity extends AppCompatActivity {
     Fragment_1hour fragment_1hour;
     Fragment_1day fragment_1day;
 
+    private ImageButton goBackToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
         System.out.println("ChartActivity : "+"onCreate()");
         initialization();
+
+        goBackToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void initialization() {
@@ -80,6 +90,7 @@ public class ChartActivity extends AppCompatActivity {
         fragment_5minute = new Fragment_5minute();
         fragment_1hour = new Fragment_1hour();
         fragment_1day = new Fragment_1day();
+        goBackToggle = (ImageButton) findViewById(R.id.chart_goback);
         spinner();
     }
 
