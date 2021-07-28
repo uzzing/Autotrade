@@ -56,8 +56,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
 
-        toolbar = findViewById(R.id.main_toolbar);
-        setSupportActionBar(toolbar);
+//        toolbar = findViewById(R.id.main_toolbar);
+//        setSupportActionBar(toolbar);
 
         // hide actionBar
 //        ActionBar actionBar = getSupportActionBar();

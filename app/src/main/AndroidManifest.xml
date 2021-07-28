@@ -33,7 +33,6 @@
         <activity android:name=".AutoTradeActivity" />
         <activity android:name=".MyPageActivity" />
         <activity android:name=".ChatActivity" />
-        <activity android:name=".MyWalletActivity" />
     </application>
 
 </manifest>

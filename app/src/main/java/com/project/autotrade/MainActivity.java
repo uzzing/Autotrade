@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = findViewById(R.id.main_toolbar);
+        toolbar = findViewById(R.id.toolbar_mywallet);
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // get account data
         auth = FirebaseAuth.getInstance();
@@ -70,12 +70,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initializeFields() {
 
-//        viewPager = (ViewPager) findViewById(R.id.main_tabs_pager);
-//        tabsAccessorAdapter = new TabsAccessorAdapter(getSupportFragmentManager());
-//        viewPager.setAdapter(tabsAccessorAdapter);
-
-        tabLayout = (TabLayout) findViewById(R.id.main_tabs);
-        tabLayout.setupWithViewPager(viewPager);
 
     }
 
