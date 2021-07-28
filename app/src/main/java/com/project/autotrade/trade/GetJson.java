@@ -27,6 +27,7 @@ public class GetJson {
     private static ArrayList<HashMap<String, String>> recentVolumeTenCoin;
 
     public String getCurrentPrice(String data) {
+
         try {
             JSONArray jsonArray = new JSONArray(data);
 

@@ -1,4 +1,4 @@
-package com.project.autotrade;
+package com.project.autotrade.chat.message;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.project.autotrade.R;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;

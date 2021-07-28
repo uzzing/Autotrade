@@ -1,10 +1,12 @@
-package com.project.autotrade.chat.Adapter;
+package com.project.autotrade.chat.group;
 
-public class GroupListItem {
+public class ListViewItem {
     private String name;
     private String userCount;
 
-    public GroupListItem(String name, String userCount) {
+    public ListViewItem() {}
+
+    public ListViewItem(String name, String userCount) {
         this.name = name;
         this.userCount = userCount;
     }

@@ -1,7 +1,6 @@
 package com.project.autotrade;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -28,31 +26,24 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.project.autotrade.chat.Adapter.GroupListAdapter;
-import com.project.autotrade.chat.Adapter.GroupListItem;
+import com.project.autotrade.chat.group.ListViewAdapter;
+import com.project.autotrade.chat.group.ListViewItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 public class ChatActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private ListView listView;
-    private ArrayAdapter<String> arrayAdapter;
-    private static GroupListAdapter groupListAdapter;
-    private ArrayList<String> groupList = new ArrayList<>();
+    private ListViewAdapter ListViewAdapter;
+    private ArrayList<ListViewItem> listViewItems = new ArrayList<ListViewItem>();
     private DatabaseReference GroupRef;
-    private ActionBarDrawerToggle toggle;
 
     private FirebaseAuth auth;
     private DatabaseReference RootRef;
 
-    private static int userCount;
-    private HashMap<String, Integer> userCountMap = new HashMap<>();
-
+    private static HashMap<String, Integer> userCountMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,30 +63,32 @@ public class ChatActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                String currentGroupName = adapterView.getItemAtPosition(position).toString();
-                String userCount = String.valueOf(userCountMap.get(currentGroupName) + 1);
+
+                ListViewItem item = (ListViewItem) adapterView.getItemAtPosition(position);
+                String currentGroupName = item.getName();
+                String userCount = item.getUserCount();
+                String updateUserCount = String.valueOf(Integer.parseInt(userCount) + 1);
 
                 Intent groupChatIntent = new Intent(ChatActivity.this, ChatRoomActivity.class);
                 groupChatIntent.putExtra("groupName", currentGroupName);
-                groupChatIntent.putExtra("userCount", userCount);
+                groupChatIntent.putExtra("userCount", updateUserCount);
                 startActivity(groupChatIntent);
             }
         });
-
     }
 
     private void initializeFields() {
-        toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
 
-        listView = (ListView) findViewById(R.id.chat_grouplist);
+        // toolbar
+        toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayShowCustomEnabled(false);
-//        arrayAdapter = new ArrayAdapter<>(ChatActivity.this, android.R.layout.simple_list_item_1, groupList);
-//        listView.setAdapter(arrayAdapter);
 
-        groupListAdapter = new GroupListAdapter();
-        listView.setAdapter(groupListAdapter);
+        // group list
+        ListViewAdapter = new ListViewAdapter(listViewItems);
+        listView = (ListView) findViewById(R.id.chat_group_listview);
+        listView.setAdapter(ListViewAdapter);
     }
 
     private void retrieveAndDisplayGroups() {
@@ -104,24 +97,21 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                Set<String> set = new HashSet<>();
-//                Iterator iterator = snapshot.getChildren().iterator();
-//                while (iterator.hasNext()) {
-//                    set.add(((DataSnapshot) iterator.next()).getKey());
-//                }
-//
-//                groupList.clear();
-//                groupList.addAll(set);
-//                arrayAdapter.notifyDataSetChanged();
 
                 if (snapshot.exists()) {
+                    ArrayList<ListViewItem> items = new ArrayList<>();
                     for (DataSnapshot eachSnapshot : snapshot.getChildren()) {
                         String groupName = eachSnapshot.getKey();
                         String userCount = eachSnapshot.child("User count").getValue().toString();
-                        userCountMap.put(groupName, Integer.parseInt(userCount));
-                        groupListAdapter.addItem(new GroupListItem(groupName, userCount));
+
+                        items.add(new ListViewItem(groupName, userCount)); // to update group list view
+                        userCountMap.put(groupName, Integer.parseInt(userCount)); // to get user count
                     }
-                    groupListAdapter.notifyDataSetChanged();
+
+                    // update group list view
+                    listViewItems.clear();
+                    listViewItems.addAll(items);
+                    ListViewAdapter.notifyDataSetChanged();
                 }
             }
 
