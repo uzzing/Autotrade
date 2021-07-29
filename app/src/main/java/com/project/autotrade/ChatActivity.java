@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ import java.util.HashMap;
 
 public class ChatActivity extends AppCompatActivity {
 
+    private ImageButton goBackToggle;
     private Toolbar toolbar;
     private ListView listView;
     private ListViewAdapter ListViewAdapter;
@@ -75,6 +77,13 @@ public class ChatActivity extends AppCompatActivity {
                 startActivity(groupChatIntent);
             }
         });
+
+        goBackToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void initializeFields() {
@@ -89,6 +98,8 @@ public class ChatActivity extends AppCompatActivity {
         ListViewAdapter = new ListViewAdapter(listViewItems);
         listView = (ListView) findViewById(R.id.chat_group_listview);
         listView.setAdapter(ListViewAdapter);
+
+        goBackToggle = (ImageButton) findViewById(R.id.chat_goback);
     }
 
     private void retrieveAndDisplayGroups() {

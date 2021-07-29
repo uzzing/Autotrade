@@ -19,7 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.project.autotrade.chat.Adapter.GroupListItem;
+
 
 import org.jetbrains.annotations.NotNull;
 
@@ -99,7 +99,6 @@ public class MyPageActivity extends AppCompatActivity {
             }
         });
     }
-
     private void initializeFields() {
         saveButton = (Button) findViewById(R.id.mypage_button);
         EditText_AccessKey = (EditText) findViewById(R.id.edittext_accesskey);

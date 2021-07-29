@@ -178,4 +178,6 @@ public class AutoTrade_5minute extends Fragment {
         progressBarView.setProgress(startTime);
 
     }
+
+
 }
