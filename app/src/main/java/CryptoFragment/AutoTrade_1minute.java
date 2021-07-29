@@ -1,7 +1,10 @@
 package CryptoFragment;
 
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
@@ -16,7 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.project.autotrade.R;
+import com.project.autotrade.TradeActivity;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import static android.view.animation.Animation.RELATIVE_TO_SELF;
@@ -31,11 +39,12 @@ public class AutoTrade_1minute extends Fragment {
     int myProgress = 0;
     ProgressBar progressBarView;
     Button btn_start;
+    Button btn_stop;
     TextView tv_time;
-    EditText et_timer;
+//    EditText et_timer;
     int progress;
     CountDownTimer countDownTimer;
-    int endTime = 250;
+    int endTime = 60;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -89,8 +98,9 @@ public class AutoTrade_1minute extends Fragment {
 
         progressBarView = (ProgressBar) view.findViewById(R.id.view_progress_bar_1min);
         btn_start = (Button) view.findViewById(R.id.btn_start_1min);
+        btn_stop = (Button) view.findViewById(R.id.btn_stop_1min);
         tv_time= (TextView) view.findViewById(R.id.tv_timer_1min);
-        et_timer = (EditText) view.findViewById(R.id.et_timer_1min);
+//        et_timer = (EditText) view.findViewById(R.id.et_timer_1min);
 
         /*Animation*/
         RotateAnimation makeVertical = new RotateAnimation(0, -90, RELATIVE_TO_SELF, 0.5f, RELATIVE_TO_SELF, 0.5f);
@@ -104,6 +114,15 @@ public class AutoTrade_1minute extends Fragment {
             @Override
             public void onClick(View v) {
                 fn_countdown();
+
+            }
+        });
+
+        btn_stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                countDownTimer.cancel();
+                tv_time.setText("00:00:00");
             }
         });
 
@@ -112,7 +131,7 @@ public class AutoTrade_1minute extends Fragment {
     }
     private void fn_countdown() {
 
-        if (et_timer.getText().toString().length()>0) {
+//        if (et_timer.getText().toString().length()>0) {
             myProgress = 0;
 
             try {
@@ -122,10 +141,10 @@ public class AutoTrade_1minute extends Fragment {
 
             }
 
-            String timeInterval = et_timer.getText().toString();
-            progress = 1;
-            endTime = Integer.parseInt(timeInterval); // up to finish time
+//            String timeInterval = et_timer.getText().toString();
 
+//            endTime = Integer.parseInt(timeInterval); // up to finish time
+            progress = 1;
             countDownTimer = new CountDownTimer(endTime * 1000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
@@ -166,9 +185,7 @@ public class AutoTrade_1minute extends Fragment {
                 }
             };
             countDownTimer.start();
-        }else {
-//            Toast.makeText(getApplicationContext(),"Please enter the value",Toast.LENGTH_LONG).show();
-        }
+
 
     }
 
@@ -178,4 +195,6 @@ public class AutoTrade_1minute extends Fragment {
         progressBarView.setProgress(startTime);
 
     }
+
+
 }

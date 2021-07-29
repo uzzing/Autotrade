@@ -11,13 +11,13 @@
         android:id="@+id/autotrade_5min_text"
         android:text="5min" />
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_start_5min"
-        android:id="@+id/et_timer_5min"
-        android:hint="Enter value"
-        android:inputType="number"/>
+<!--    <EditText-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_above="@+id/btn_start_5min"-->
+<!--        android:id="@+id/et_timer_5min"-->
+<!--        android:hint="Enter value"-->
+<!--        android:inputType="number"/>-->
 
     <ProgressBar
         android:id="@+id/view_progress_bar_5min"
@@ -38,10 +38,24 @@
         />
 
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:id="@+id/btn_start_5min"
-        android:text="Start Timer"
+        android:layout_marginLeft="80dp"
+        android:text="START"
+        android:textColor="@color/white"
+        android:background="@drawable/button_radius"
         android:layout_alignParentBottom="true"/>
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_stop_5min"
+        android:text="STOP"
+        android:textColor="@color/white"
+        android:background="@drawable/button_radius"
+        android:layout_toRightOf="@+id/btn_start_5min"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="45dp"/>
 
 </RelativeLayout>

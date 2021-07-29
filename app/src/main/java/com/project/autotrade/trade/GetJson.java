@@ -216,6 +216,7 @@ public class GetJson {
         // arraylist(hashMap)
         for (int i = 0; i < allCoinNmList.size(); i++) {
             String coinNm = allCoinNmList.get(i);
+            Thread.sleep(30);
             JSONArray jsonArray = new JSONArray(EntityUtils.toString(client.getTickerData(coinNm)));
 
             JSONObject jsonObject = jsonArray.getJSONObject(0);
