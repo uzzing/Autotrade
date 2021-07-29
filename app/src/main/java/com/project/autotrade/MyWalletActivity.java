@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.autotrade.chat.message.MyData;
+import com.project.autotrade.trade.GetCurrent;
 import com.project.autotrade.trade.GetJson;
 
 import org.jetbrains.annotations.NotNull;
@@ -50,8 +51,8 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
     private FirebaseUser currentUser;
     private DatabaseReference RootRef;
 
-    private ActionBarDrawerToggle toggle;
 
+    private ActionBarDrawerToggle toggle;
     public MyWalletActivity() { }
 
     @Override
@@ -133,7 +134,7 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        getMenuInflater().inflate(R.menu.options_menu, menu);
+        getMenuInflater().inflate(R.menu.options_menu_mywallet, menu);
 
         return true;
     }
@@ -142,7 +143,17 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
 
-        if (item.getItemId() == R.id.main_logout_option) {
+        if (item.getItemId() == R.id.mywallet_ordercoin) {
+            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
+            startActivity(intent);
+        }
+
+        if (item.getItemId() == R.id.mywallet_getcurrent) {
+            Intent intent = new Intent(getApplicationContext(), GetCurrent.class);
+            startActivity(intent);
+        }
+
+        if (item.getItemId() == R.id.mywallet_logout_option) {
             auth.signOut();
             sendUserToLoginActivity();
         }
@@ -182,11 +193,11 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         int id = menuItem.getItemId();
 
         if (menuItem.getItemId() == R.id.home) {
-            Intent intent = new Intent(getApplicationContext(), AutoTradeActivity.class);
+            Intent intent = new Intent(getApplicationContext(), MyWalletActivity.class);
             startActivity(intent);
         }
         if (menuItem.getItemId() == R.id.autotrade) {
-            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
+            Intent intent = new Intent(getApplicationContext(), AutoTradeActivity.class);
             startActivity(intent);
         }
         if (menuItem.getItemId() == R.id.chat) {

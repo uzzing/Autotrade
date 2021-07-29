@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/overflowMenu_mywallet"
+        android:icon="@drawable/menu_icon"
+        android:title="dd"
+        app:showAsAction="always">
+        <menu>
+
+            <item
+                android:title="OrderCoin"
+                android:id="@+id/mywallet_ordercoin"
+                app:showAsAction="never"
+                />
+            <item
+                android:title="GetCurrent"
+                android:id="@+id/mywallet_getcurrent"
+                app:showAsAction="never"
+                />
+            <item
+                android:title="Logout"
+                android:id="@+id/mywallet_logout_option"
+                app:showAsAction="never"
+                />
+        </menu>
+    </item>
+</menu>
