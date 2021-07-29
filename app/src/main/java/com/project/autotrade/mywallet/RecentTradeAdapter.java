@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class RecentTradeAdapter extends RecyclerView.Adapter<RecentTradeAdapter.RecentTradeViewHolder>{
+public class RecentTradeAdapter extends RecyclerView.Adapter<RecentTradeAdapter.RecentTradeViewHolder> {
 
     private List<RecentTradeItem> recentTradeItems;
 
@@ -24,7 +24,6 @@ public class RecentTradeAdapter extends RecyclerView.Adapter<RecentTradeAdapter.
     }
 
     public class RecentTradeViewHolder extends RecyclerView.ViewHolder {
-
         private TextView recentTrade;
 
         public RecentTradeViewHolder(@NonNull @NotNull View itemView) {

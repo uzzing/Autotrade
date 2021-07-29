@@ -55,7 +55,7 @@ public class Client {
     public HttpEntity postEntity(HashMap<String, String> params) throws IOException, NoSuchAlgorithmException {
 
         ArrayList<String> queryElements = new ArrayList<>();
-        for(Map.Entry<String, String> entity : params.entrySet()) {
+        for (Map.Entry<String, String> entity : params.entrySet()) {
             queryElements.add(entity.getKey() + "=" + entity.getValue());
         }
 
@@ -154,8 +154,9 @@ public class Client {
 
     // get information of the specific order
     public HttpEntity getOrderInfo(HashMap<String, String> params) throws NoSuchAlgorithmException, IOException {
+
         ArrayList<String> queryElements = new ArrayList<>();
-        for(Map.Entry<String, String> entity : params.entrySet()) {
+        for (Map.Entry<String, String> entity : params.entrySet()) {
             queryElements.add(entity.getKey() + "=" + entity.getValue());
         }
 
