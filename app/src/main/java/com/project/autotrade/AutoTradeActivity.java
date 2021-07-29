@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ import static android.view.animation.Animation.RELATIVE_TO_SELF;
 public class AutoTradeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private Toolbar toolbar;
     private ActionBarDrawerToggle toggle;
+    private ImageButton goBackToggle;
 
     TabLayout tabLayout;
     ViewPager viewPager;
@@ -62,6 +64,8 @@ public class AutoTradeActivity extends AppCompatActivity implements NavigationVi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_autotrade);
+
+        goBackToggle = (ImageButton) findViewById(R.id.autotrade_goback);
 
 //        progressBarView = (ProgressBar) findViewById(R.id.view_progress_bar);
 //        btn_start = (Button)findViewById(R.id.btn_start);
@@ -100,6 +104,13 @@ public class AutoTradeActivity extends AppCompatActivity implements NavigationVi
 
         //Setup with view pager
         tabLayout.setupWithViewPager(viewPager);
+
+        goBackToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void prepareViewPager(ViewPager viewPager, ArrayList<String> arrayList) {
