@@ -77,13 +77,6 @@ public class ChatActivity extends AppCompatActivity {
                 startActivity(groupChatIntent);
             }
         });
-
-        goBackToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 
     private void initializeFields() {
@@ -100,6 +93,12 @@ public class ChatActivity extends AppCompatActivity {
         listView.setAdapter(ListViewAdapter);
 
         goBackToggle = (ImageButton) findViewById(R.id.chat_goback);
+        goBackToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void retrieveAndDisplayGroups() {
@@ -110,7 +109,9 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 if (snapshot.exists()) {
+
                     ArrayList<ListViewItem> items = new ArrayList<>();
+
                     for (DataSnapshot eachSnapshot : snapshot.getChildren()) {
                         String groupName = eachSnapshot.getKey();
                         String userCount = eachSnapshot.child("User count").getValue().toString();

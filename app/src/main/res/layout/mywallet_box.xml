@@ -1,8 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@drawable/mywallet_box"
-    android:layout_gravity="center"
-    android:id="@+id/recent_trade_box">
-</TextView>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/mywallet_box"
+        android:layout_gravity="center"
+        android:id="@+id/recent_trade_box"
+        android:layout_margin="15dp">
+    </ImageView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="15dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="NAME"
+                    android:textSize="14dp"
+                    android:textColor="@color/blue_300"
+                    android:textStyle="bold">
+                </TextView>
+                <TextView
+                    android:id="@+id/recent_trade_name"
+                    android:layout_width="85dp"
+                    android:layout_height="wrap_content"
+                    android:text="KRW-BTC"
+                    android:textSize="14dp"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center">
+                </TextView>
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="ORDER"
+                    android:textSize="14dp"
+                    android:textColor="@color/blue_300"
+                    android:textStyle="bold">
+                </TextView>
+                <TextView
+                    android:id="@+id/recent_trade_order"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:text="ASK"
+                    android:textSize="14dp"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center">
+                </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="7dp"
+            android:layout_marginLeft="10dp">
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:text="PRICE"
+                android:textSize="14dp"
+                android:textColor="@color/blue_300"
+                android:textStyle="bold">
+            </TextView>
+            <TextView
+                android:id="@+id/recent_trade_price"
+                android:layout_width="85dp"
+                android:layout_height="wrap_content"
+                android:text="581"
+                android:textSize="14dp"
+                android:textColor="@color/black"
+                android:layout_gravity="center">
+            </TextView>
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="VOLUME"
+                android:textSize="14dp"
+                android:textColor="@color/blue_300"
+                android:textStyle="bold">
+            </TextView>
+            <TextView
+                android:id="@+id/recent_trade_volume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="56.01694915"
+                android:textSize="14dp"
+                android:textColor="@color/black"
+                android:layout_gravity="center">
+            </TextView>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/recent_trade_createdAt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="2021-07-30T00:55:10+09:00"
+            android:textSize="12dp">
+        </TextView>
+    </LinearLayout>
+</RelativeLayout>

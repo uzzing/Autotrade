@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -21,22 +22,33 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.JsonObject;
 import com.project.autotrade.chat.message.MyData;
+import com.project.autotrade.mywallet.RecentTradeAdapter;
+import com.project.autotrade.mywallet.RecentTradeItem;
 import com.project.autotrade.trade.GetCurrent;
 import com.project.autotrade.trade.AutoTrade;
 import com.project.autotrade.trade.Client;
 import com.project.autotrade.trade.GetJson;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import cz.msebera.android.httpclient.util.EntityUtils;
 
@@ -51,15 +63,18 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
 
     // recent trades
     private ScrollView scrollView;
-    private RecyclerView tradeListView;
-    private LinearLayoutManager linearLayoutManager;
+    private ListView recentTradeListView;
 
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
-    private DatabaseReference RootRef;
+    private DatabaseReference UUIDRef;
 
+    private String[] uuidArray;
+    private ArrayList<RecentTradeItem> recentTradeItems = new ArrayList<>();
+    private RecentTradeAdapter recentTradeAdapter;
 
     private ActionBarDrawerToggle toggle;
+
     public MyWalletActivity() { }
 
     @Override
@@ -70,10 +85,12 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         // get account data
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
-        RootRef = FirebaseDatabase.getInstance().getReference();
+        UUIDRef = FirebaseDatabase.getInstance().getReference().child("UUID");
 
         getBalance();
         initializeFields();
+
+        getUUIDfromDB();
 
         // navigation drawer
         setUpNavigationDrawer();
@@ -118,23 +135,85 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
 
         // trade list
         scrollView = (ScrollView) findViewById(R.id.scroll_view_recent_trade);
-        tradeListView = (RecyclerView) findViewById(R.id.recent_trade_display);
-        linearLayoutManager = new LinearLayoutManager(this);
-        tradeListView.setLayoutManager(linearLayoutManager);
+        recentTradeAdapter = new RecentTradeAdapter(recentTradeItems);
+        recentTradeListView = (ListView) findViewById(R.id.recent_trade_listview);
+        recentTradeListView.setAdapter(recentTradeAdapter);
+    }
+
+    private void getUUIDfromDB() {
+
+        UUIDRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+
+                if (snapshot.exists()) {
+                    Iterator<DataSnapshot> iterator = snapshot.getChildren().iterator();
+
+                    int i = 0;
+                    uuidArray = new String[24];
+
+                    while (iterator.hasNext()) {
+                        uuidArray[i] = iterator.next().getValue().toString();
+                        i++;
+                    }
+
+                    System.out.println("uuidArray" + uuidArray[0] + " " + uuidArray[1]);
+                    getRecentTrade();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void getRecentTrade() {
 
-        try {
-            HashMap<String, String> params = new HashMap<>();
-            params.put("uuid", AutoTrade.buyUUID);
-            Client client = new Client();
-            String data = EntityUtils.toString(client.getOrderInfo(params));
+        Handler handler = new Handler() {
+            public void handleMessage(Message msg) {
+                recentTradeAdapter.notifyDataSetChanged();
+            }
+        };
 
+        new Thread() {
+            public void run() {
+                try {
+                    HashMap<String, String> params = new HashMap<>();
+                    params.put("state", "done");
 
-        } catch (NoSuchAlgorithmException | IOException e) {
-            e.printStackTrace();
-        }
+                    Client client = new Client();
+                    String data = EntityUtils.toString(client.getAllOrderInfo(params));
+                    JSONArray jsonArray = new JSONArray(data);
+
+                    ArrayList<RecentTradeItem> items = new ArrayList<>();
+
+                    for (int i = 0; i < 24; i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String coinName = jsonObject.get("market").toString();
+                        String order = jsonObject.get("side").toString();
+                        String price = jsonObject.get("price").toString();
+                        String volume = jsonObject.get("volume").toString();
+                        String createdAt = jsonObject.get("created_at").toString();
+
+                        System.out.println(jsonObject);
+                        items.add(new RecentTradeItem(coinName, order, price, volume, createdAt));
+                        Thread.sleep(100);
+                    }
+
+                    recentTradeItems.clear();
+                    recentTradeItems.addAll(items);
+
+                    Message msg = handler.obtainMessage();
+                    handler.sendMessage(msg);
+
+                } catch (NoSuchAlgorithmException |
+                        IOException | InterruptedException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
 
     }
 

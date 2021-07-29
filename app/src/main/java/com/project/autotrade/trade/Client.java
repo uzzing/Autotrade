@@ -185,4 +185,38 @@ public class Client {
         HttpEntity entity = response.getEntity();
         return entity;
     }
+
+
+    public HttpEntity getAllOrderInfo(HashMap<String, String> params) throws NoSuchAlgorithmException, IOException {
+
+        ArrayList<String> queryElements = new ArrayList<>();
+        for (Map.Entry<String, String> entity : params.entrySet()) {
+            queryElements.add(entity.getKey() + "=" + entity.getValue());
+        }
+
+        String queryString = String.join("&", queryElements.toArray(new String[0]));
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(queryString.getBytes("UTF-8"));
+
+        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        String jwtToken = JWT.create()
+                .withClaim("access_key", accessKey)
+                .withClaim("nonce", UUID.randomUUID().toString())
+                .withClaim("query_hash", queryHash)
+                .withClaim("query_hash_alg", "SHA512")
+                .sign(algorithm);
+
+        String authenticationToken = "Bearer " + jwtToken;
+
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet request = new HttpGet(serverUrl + "/v1/orders?" + queryString);
+        request.setHeader("Content-Type", "application/json");
+        request.addHeader("Authorization", authenticationToken);
+
+        HttpResponse response = client.execute(request);
+        HttpEntity entity = response.getEntity();
+        return entity;
+    }
 }
