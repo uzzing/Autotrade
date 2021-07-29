@@ -23,15 +23,22 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
 import com.project.autotrade.chat.message.MyData;
 import com.project.autotrade.trade.GetCurrent;
+import com.project.autotrade.trade.AutoTrade;
+import com.project.autotrade.trade.Client;
 import com.project.autotrade.trade.GetJson;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashMap;
+
+import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class MyWalletActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -114,6 +121,21 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         tradeListView = (RecyclerView) findViewById(R.id.recent_trade_display);
         linearLayoutManager = new LinearLayoutManager(this);
         tradeListView.setLayoutManager(linearLayoutManager);
+    }
+
+    private void getRecentTrade() {
+
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("uuid", AutoTrade.buyUUID);
+            Client client = new Client();
+            String data = EntityUtils.toString(client.getOrderInfo(params));
+
+
+        } catch (NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

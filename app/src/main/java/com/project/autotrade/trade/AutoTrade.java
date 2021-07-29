@@ -2,8 +2,17 @@ package com.project.autotrade.trade;
 
 import android.util.Log;
 
-import com.github.mikephil.charting.utils.Utils;
+import androidx.annotation.NonNull;
 
+import com.github.mikephil.charting.utils.Utils;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.UUID;
 
 import cz.msebera.android.httpclient.util.EntityUtils;
 
@@ -27,6 +37,13 @@ public class AutoTrade {
 
     public static String buyUUID;
     public static String sellUUID;
+
+    private DatabaseReference UUIDRef;
+
+    private void sendBuyUUIDToDB(String date, String uuid) {
+        UUIDRef = FirebaseDatabase.getInstance().getReference().child("UUID").child(date);
+        UUIDRef.setValue(uuid);
+    }
 
     public void newAutoTradeFiveMinute(String finalCoinNm) throws InterruptedException, NoSuchAlgorithmException, JSONException, IOException {
 
@@ -55,6 +72,7 @@ public class AutoTrade {
                 // get buy data
                 orderData = getBuyOrderData(buyData);
                 buyUUID = orderData.get("uuid").toString();
+                sendBuyUUIDToDB(date, buyUUID);
             }
 
             Thread.sleep(1000);
@@ -91,6 +109,7 @@ public class AutoTrade {
                             String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
                             orderData = getSellOrderData(sellData);
                             sellUUID = orderData.get("uuid").toString();
+                            sendBuyUUIDToDB(now.toString(), sellUUID);
                             System.out.println("손절때문에 팔렸어요");
                             Thread.sleep(1000); // take a break
                         }
@@ -118,6 +137,7 @@ public class AutoTrade {
                                     String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
                                     orderData = getSellOrderData(sellData);
                                     sellUUID = orderData.get("uuid").toString();
+                                    sendBuyUUIDToDB(now.toString(), sellUUID);
                                     System.out.println("현재가가 topPrice 0.007이라서 팔렸어요");
                                 }
                             }
@@ -145,6 +165,7 @@ public class AutoTrade {
                             String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
                             orderData = getSellOrderData(sellData);
                             sellUUID = orderData.get("uuid").toString();
+                            sendBuyUUIDToDB(now.toString(), sellUUID);
                             System.out.println("마지막 30초때 최고가가 45초 이후에 다시 되어서 팔았어요~");
                             // and don't break
                         }
@@ -161,6 +182,7 @@ public class AutoTrade {
                             String sellData = sellMarketOrder(finalCoinNm, currencyBalance);
                             orderData = getSellOrderData(sellData);
                             sellUUID = orderData.get("uuid").toString();
+                            sendBuyUUIDToDB(now.toString(), sellUUID);
                             System.out.println("5분 캔들이 끝나서 팔았어요~");
                         }
                         Thread.sleep(1000); // take one second
