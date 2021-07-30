@@ -16,8 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,12 +26,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.JsonObject;
-import com.project.autotrade.chat.message.MyData;
+import com.project.autotrade.chat.model_message.MyData;
 import com.project.autotrade.mywallet.RecentTradeAdapter;
 import com.project.autotrade.mywallet.RecentTradeItem;
 import com.project.autotrade.trade.GetCurrent;
-import com.project.autotrade.trade.AutoTrade;
 import com.project.autotrade.trade.Client;
 import com.project.autotrade.trade.GetJson;
 
@@ -69,6 +65,10 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
     private FirebaseUser currentUser;
     private DatabaseReference UUIDRef;
 
+    // access key and secret key
+    private DatabaseReference KeyRef;
+    private String currentUserID;
+
     private String[] uuidArray;
     private ArrayList<RecentTradeItem> recentTradeItems = new ArrayList<>();
     private RecentTradeAdapter recentTradeAdapter;
@@ -87,13 +87,41 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         currentUser = auth.getCurrentUser();
         UUIDRef = FirebaseDatabase.getInstance().getReference().child("UUID");
 
-        getBalance();
-        initializeFields();
 
+        // get access key and secret key
+        currentUserID = Arrays.stream(auth.getCurrentUser().getEmail().split("@")).findFirst().get();
+        KeyRef = FirebaseDatabase.getInstance().getReference().child("Keys").child(currentUserID);
+
+        getKeysfromDB();
         getUUIDfromDB();
+        initializeFields();
 
         // navigation drawer
         setUpNavigationDrawer();
+
+    }
+
+    private void getKeysfromDB() {
+
+        KeyRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+
+                if (snapshot.exists()) {
+                    String key = snapshot.getKey();
+                    String accesskey = snapshot.child("Accesskey").getValue().toString();
+                    String secretkey = snapshot.child("Secretkey").getValue().toString();
+
+                    new Client().getKeys(accesskey, secretkey);
+                    getBalance();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
 
     }
 
@@ -157,7 +185,6 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
                         i++;
                     }
 
-                    System.out.println("uuidArray" + uuidArray[0] + " " + uuidArray[1]);
                     getRecentTrade();
                 }
             }
@@ -197,9 +224,8 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
                         String volume = jsonObject.get("volume").toString();
                         String createdAt = jsonObject.get("created_at").toString();
 
-                        System.out.println(jsonObject);
                         items.add(new RecentTradeItem(coinName, order, price, volume, createdAt));
-                        Thread.sleep(100);
+                        Thread.sleep(30);
                     }
 
                     recentTradeItems.clear();
@@ -244,10 +270,10 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
 
-        if (item.getItemId() == R.id.mywallet_ordercoin) {
-            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
-            startActivity(intent);
-        }
+//        if (item.getItemId() == R.id.mywallet_ordercoin) {
+//            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
+//            startActivity(intent);
+//        }
 
         if (item.getItemId() == R.id.mywallet_getcurrent) {
             Intent intent = new Intent(getApplicationContext(), GetCurrent.class);

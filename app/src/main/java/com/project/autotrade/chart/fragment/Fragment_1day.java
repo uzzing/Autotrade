@@ -1,4 +1,4 @@
-package com.project.autotrade.chart;
+package com.project.autotrade.chart.fragment;
 
 import android.os.Bundle;
 

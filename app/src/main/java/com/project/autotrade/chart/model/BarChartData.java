@@ -1,4 +1,4 @@
-package com.project.autotrade.chart;
+package com.project.autotrade.chart.model;
 
 public class BarChartData {
     private int xValue;

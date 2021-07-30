@@ -1,4 +1,4 @@
-package com.project.autotrade.chat.group;
+package com.project.autotrade.chat.model_group;
 
 public class ListViewItem {
     private String name;

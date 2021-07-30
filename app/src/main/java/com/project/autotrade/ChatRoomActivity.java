@@ -34,8 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.project.autotrade.chat.message.MessageAdapter;
-import com.project.autotrade.chat.message.MessageItem;
+import com.project.autotrade.chat.model_message.MessageAdapter;
+import com.project.autotrade.chat.model_message.MessageItem;
 
 import org.jetbrains.annotations.NotNull;
 

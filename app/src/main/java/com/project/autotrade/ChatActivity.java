@@ -27,8 +27,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.project.autotrade.chat.group.ListViewAdapter;
-import com.project.autotrade.chat.group.ListViewItem;
+import com.project.autotrade.chat.model_group.ListViewAdapter;
+import com.project.autotrade.chat.model_group.ListViewItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,31 +52,15 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        GroupRef = FirebaseDatabase.getInstance().getReference().child("Groups");
-
-        // get account data
         auth = FirebaseAuth.getInstance();
         RootRef = FirebaseDatabase.getInstance().getReference();
+        GroupRef = FirebaseDatabase.getInstance().getReference().child("Groups");
 
         initializeFields();
 
         retrieveAndDisplayGroups();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
-                ListViewItem item = (ListViewItem) adapterView.getItemAtPosition(position);
-                String currentGroupName = item.getName();
-                String userCount = item.getUserCount();
-                String updateUserCount = String.valueOf(Integer.parseInt(userCount) + 1);
-
-                Intent groupChatIntent = new Intent(ChatActivity.this, ChatRoomActivity.class);
-                groupChatIntent.putExtra("groupName", currentGroupName);
-                groupChatIntent.putExtra("userCount", updateUserCount);
-                startActivity(groupChatIntent);
-            }
-        });
+        selectGroup();
     }
 
     private void initializeFields() {
@@ -129,6 +113,24 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private void selectGroup() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                ListViewItem item = (ListViewItem) adapterView.getItemAtPosition(position);
+                String currentGroupName = item.getName();
+                String userCount = item.getUserCount();
+                String updateUserCount = String.valueOf(Integer.parseInt(userCount) + 1);
+
+                Intent groupChatIntent = new Intent(ChatActivity.this, ChatRoomActivity.class);
+                groupChatIntent.putExtra("groupName", currentGroupName);
+                groupChatIntent.putExtra("userCount", updateUserCount);
+                startActivity(groupChatIntent);
             }
         });
     }

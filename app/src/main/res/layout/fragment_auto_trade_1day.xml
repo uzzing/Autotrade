@@ -1,60 +1,95 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="CryptoFragment.AutoTrade_1day">
+    tools:context=".trade.fragment.AutoTrade_1day"
+    android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
+    <EditText
+        android:id="@+id/edit_coinNm"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:layout_gravity="center"
+        android:padding="8dp"
+        android:textSize="17dp"
+        android:textAlignment="center"
+        android:background="@drawable/chat_my_message_box"
+        android:hint="Enter Ticker Name"
+        android:textColorHint="@color/black"
+        android:elevation="5dp"/>
+
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="1day" />
-
-<!--    <EditText-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_above="@+id/btn_start_1day"-->
-<!--        android:id="@+id/et_timer_1day"-->
-<!--        android:hint="Enter value"-->
-<!--        android:inputType="number"/>-->
-
-    <ProgressBar
-        android:id="@+id/view_progress_bar_1day"
-        style="@style/CircularDeterminateProgressBar"
-        android:layout_width="250dp"
-        android:indeterminateOnly="false"
-        android:layout_height="250dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_centerInParent="true"
-        android:progressDrawable="@drawable/drawable_circularprogressbar" />
+        android:layout_marginTop="5dp"
+        android:text="(ex.BTC, XRP)"
+        android:textColor="@color/gray"
+        android:textAlignment="center"
+        android:textSize="13dp">
 
+    </TextView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_timer_1day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="00:00:00"
+            android:textSize="17dp"/>
+
+        <ProgressBar
+            android:id="@+id/view_progress_bar_1day"
+            style="@style/CircularDeterminateProgressBar"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"
+            android:indeterminateOnly="false"
+            android:progressDrawable="@drawable/drawable_circularprogressbar" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center">
+
+        <Button
+            android:id="@+id/btn_start_1day"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="75dp"
+            android:text="START"
+            android:textColor="@color/white"
+            android:background="@drawable/button_radius" />
+
+        <Button
+            android:id="@+id/btn_stop_1day"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="45dp"
+            android:text="STOP"
+            android:textColor="@color/white"
+            android:background="@drawable/button_radius"
+            android:layout_toRightOf="@+id/btn_start_1day" />
+    </LinearLayout>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_timer_1day"
-        android:layout_centerInParent="true"
-        />
+        android:text="Trade the specific coins"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        android:textStyle="italic"
+        android:textAlignment="center">
+    </TextView>
 
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_start_1day"
-        android:layout_marginLeft="80dp"
-        android:text="START"
-        android:textColor="@color/white"
-        android:background="@drawable/button_radius"
-        android:layout_alignParentBottom="true"/>
-
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_stop_1day"
-        android:text="STOP"
-        android:textColor="@color/white"
-        android:background="@drawable/button_radius"
-        android:layout_toRightOf="@+id/btn_start_1day"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="45dp"/>
-
-</RelativeLayout>
+</LinearLayout>

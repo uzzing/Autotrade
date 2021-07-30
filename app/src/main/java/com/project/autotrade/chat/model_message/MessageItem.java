@@ -1,4 +1,4 @@
-package com.project.autotrade.chat.message;
+package com.project.autotrade.chat.model_message;
 
 public class MessageItem {
 

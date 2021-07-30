@@ -8,9 +8,7 @@
             android:thicknessRatio="15" >
             <gradient
                 android:startColor="@color/yellow_200"
-                android:endColor="@color/blue_200"
-
-                />
+                android:endColor="@color/blue_200"/>
         </shape>
     </item>
 
@@ -20,13 +18,9 @@
             android:useLevel="true"
             android:thicknessRatio="15" >
              <gradient
-                 android:startColor="@color/teal_200"
+                 android:startColor="@color/white"
                  android:endColor="@color/cardview_light_background"
-                 android:type="sweep"
-
-                 />
-
+                 android:type="sweep" />
         </shape>
     </item>
-
 </layer-list>

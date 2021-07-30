@@ -380,7 +380,7 @@ public class AutoTrade {
                     System.out.println("buyPrice : " + buyPrice);
 
                     if (tradePrice <= buyPrice * 0.995) { // tradePrice is parameter
-                        String sell_data = sellMarketOrder(GetJson.coinName, currencyBalance * 0.9995);
+                        String sell_data = sellMarketOrder(GetJson.coinName, currencyBalance);
                         System.out.println("손절 bye bye");
                         Thread.sleep(1000); // take a break
                         break;
@@ -405,7 +405,7 @@ public class AutoTrade {
                     } else {
                         double currencyBalance = Double.parseDouble(strCurrencyBalance);
                         if (currencyBalance > 0.00008)
-                            sellMarketOrder(GetJson.coinName, currencyBalance * 0.9995);
+                            sellMarketOrder(GetJson.coinName, currencyBalance);
                         Thread.sleep(1000); // take a break
                         break;
                     }
@@ -417,21 +417,19 @@ public class AutoTrade {
         }
     }
 
-    public void autoTrade(String coinNm, String currentPrice, String
-            targetPrice, LocalDateTime
-                                  now) throws IOException, NoSuchAlgorithmException, InterruptedException {
+    public void autoTradeOneDay(String coinNm, String currentPrice, String
+            targetPrice, LocalDateTime now) throws IOException, NoSuchAlgorithmException, InterruptedException {
 
-//        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(9, 0, 0));
-//        LocalDateTime endTime = startTime.plusDays(1).with(LocalTime.of(8, 59, 50));
-        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(23, 0, 0));
-        LocalDateTime endTime = LocalDateTime.now().with(LocalTime.of(23, 41, 0));
+        LocalDateTime startTime = LocalDateTime.now().with(LocalTime.of(9, 0, 0));
+        LocalDateTime endTime = startTime.plusDays(1).with(LocalTime.of(8, 59, 50));
 
         System.out.println(coinNm);
-        System.out.println(now);
         System.out.println(currentPrice);
         System.out.println(targetPrice);
 
         try {
+
+            // buy
             if (startTime.isBefore(now) && endTime.isAfter(now)) {
                 if (Integer.parseInt(targetPrice) < Integer.parseInt(currentPrice)) {
                     Log.d(TAG, "buy");
@@ -442,15 +440,16 @@ public class AutoTrade {
                     if (krw > 5000)
                         buyMarketOrder("KRW-" + coinNm, krw * 0.9995);
                 }
-            } else {
+            }
+            else { // sell
+
                 Log.d(TAG, "sell");
 
                 String strCurrencyBalance = new GetJson().getBalance(coinNm);
                 double currencyBalance = Double.parseDouble(strCurrencyBalance);
 
                 if (currencyBalance > 0.00008)
-                    sellMarketOrder("KRW-" + coinNm, currencyBalance * 0.9995);
-
+                    sellMarketOrder("KRW-" + coinNm, currencyBalance);
             }
         } catch (NumberFormatException | JSONException e) {
             e.printStackTrace();

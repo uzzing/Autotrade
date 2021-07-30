@@ -1,4 +1,4 @@
-package com.project.autotrade.chat.group;
+package com.project.autotrade.chat.model_group;
 
 import android.content.Context;
 import android.view.LayoutInflater;

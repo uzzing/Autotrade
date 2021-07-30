@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.project.autotrade.trade.Client;
 
 
 import org.jetbrains.annotations.NotNull;
@@ -37,9 +38,9 @@ public class MyPageActivity extends AppCompatActivity {
     private String currentUserID;
     private FirebaseAuth auth;
 
-    String Accesskey;
-    String Secretkey;
-    HashMap<Object, String> hashMap = new HashMap<>();
+    private String Accesskey;
+    private String Secretkey;
+    private HashMap<Object, String> hashMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +83,8 @@ public class MyPageActivity extends AppCompatActivity {
                         String accesskey = snapshot.child("Accesskey").getValue().toString();
                         String secretkey = snapshot.child("Secretkey").getValue().toString();
                         System.out.println(accesskey + "," + secretkey);
+                        new Client().getKeys(accesskey, secretkey);
                 }
-
             }
 
             @Override
@@ -99,6 +100,7 @@ public class MyPageActivity extends AppCompatActivity {
             }
         });
     }
+
     private void initializeFields() {
         saveButton = (Button) findViewById(R.id.mypage_button);
         EditText_AccessKey = (EditText) findViewById(R.id.edittext_accesskey);

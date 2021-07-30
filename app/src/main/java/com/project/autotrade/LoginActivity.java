@@ -28,7 +28,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.project.autotrade.chat.message.MyData;
+import com.project.autotrade.chat.model_message.MyData;
 
 import org.jetbrains.annotations.NotNull;
 

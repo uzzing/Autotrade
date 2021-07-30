@@ -1,4 +1,4 @@
-package com.project.autotrade.chat.message;
+package com.project.autotrade.chat.model_message;
 
 import android.view.LayoutInflater;
 import android.view.View;

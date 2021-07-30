@@ -1,4 +1,4 @@
-package com.project.autotrade.trade;
+package com.project.autotrade.trade.model;
 
 public class OrderBookVo {
     String price; //호가

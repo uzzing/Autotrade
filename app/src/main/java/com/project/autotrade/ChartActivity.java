@@ -1,59 +1,20 @@
 package com.project.autotrade;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.project.autotrade.chart.BarChartData;
-import com.project.autotrade.chart.Fragment_1day;
-import com.project.autotrade.chart.Fragment_1hour;
-import com.project.autotrade.chart.Fragment_5minute;
-import com.project.autotrade.chart.Fragment_SumOfProfit;
-import com.project.autotrade.trade.AutoTrade;
-import com.project.autotrade.trade.Client;
-
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.experimental.theories.DataPoint;
-
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-
-import cz.msebera.android.httpclient.util.EntityUtils;
+import com.project.autotrade.chart.fragment.Fragment_1day;
+import com.project.autotrade.chart.fragment.Fragment_1hour;
+import com.project.autotrade.chart.fragment.Fragment_5minute;
+import com.project.autotrade.chart.fragment.Fragment_SumOfProfit;
 
 public class ChartActivity extends AppCompatActivity {
 
@@ -73,7 +34,7 @@ public class ChartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
-        System.out.println("ChartActivity : "+"onCreate()");
+
         initialization();
 
         goBackToggle.setOnClickListener(new View.OnClickListener() {
@@ -95,7 +56,7 @@ public class ChartActivity extends AppCompatActivity {
     }
 
     private void spinner() {
-        System.out.println("ChartActivity : "+"spinner()");
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(ChartActivity.this,
                 R.layout.dropdown_item, getResources().getStringArray(R.array.charts));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
@@ -139,6 +100,4 @@ public class ChartActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
     }
-
-
 }

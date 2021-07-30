@@ -1,19 +1,16 @@
 package com.project.autotrade;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,13 +32,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import CryptoFragment.AutoTrade_1day;
-import CryptoFragment.AutoTrade_1minute;
-import CryptoFragment.AutoTrade_5minute;
-
-import static android.view.animation.Animation.RELATIVE_TO_SELF;
+import com.project.autotrade.trade.fragment.AutoTrade_1day;
+import com.project.autotrade.trade.fragment.AutoTrade_1minute;
+import com.project.autotrade.trade.fragment.AutoTrade_5minute;
 
 public class AutoTradeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
     private Toolbar toolbar;
     private ActionBarDrawerToggle toggle;
     private ImageButton goBackToggle;
@@ -247,10 +243,10 @@ public class AutoTradeActivity extends AppCompatActivity implements NavigationVi
 //            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
 //            startActivity(intent);
 //        }
-        if (menuItem.getItemId() == R.id.autotrade) {
-            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
-            startActivity(intent);
-        }
+//        if (menuItem.getItemId() == R.id.autotrade) {
+//            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
+//            startActivity(intent);
+//        }
 //        if (menuItem.getItemId() == R.id.chat) {
 //            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
 //            startActivity(intent);

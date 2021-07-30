@@ -29,7 +29,15 @@ public class Client {
 
     String accessKey = "8X1Qudp7NYxlsLHwS1Tj1jC1Kqjz3TY1SpkznKix";
     String secretKey = "oQtMqvQxHr7xZJe8wFXcqbMboGcXxxjLDbYrnPkT";
-    String serverUrl = "https://api.upbit.com";
+
+//    private static String accessKey;
+//    private static String secretKey;
+    private String serverUrl = "https://api.upbit.com";
+
+    public void getKeys(String accessKey, String secretKey) {
+//        this.accessKey = accessKey;
+//        this.secretKey = secretKey;
+    }
 
     // change the name of method
     public HttpEntity getEntity() throws IOException, NoSuchAlgorithmException {
