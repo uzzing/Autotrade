@@ -84,7 +84,40 @@ public class Fragment_5minute extends Fragment {
         return view;
     }
 
-
+    // get data from firebase
+    private void retrieveData() {
+        ChartRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot eachSnapshot : snapshot.getChildren()) {
+                        BarChartData barChartData = eachSnapshot.getValue(BarChartData.class);
+                        barList.add(new BarEntry(barChartData.getxValue(), barChartData.getyValue()));
+                    }
+                    initialize();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+            }
+        });
+    }
+    private void initialize() {
+        barDataSet = new BarDataSet(barList, "5 minutes");
+        barDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        barDataSet.setValueTextColor(Color.RED);
+        barDataSet.setValueTextSize(13);
+        barData = new BarData(barDataSet);
+        barChart.setData(barData);
+        barChart.setFitBars(true);
+        barChart.setVisibleXRangeMinimum(6);
+        barChart.setVisibleXRangeMaximum(6);
+        barChart.setVisibleXRange(0, 60);
+        barChart.animateY(2000);
+        barChart.moveViewTo(barData.getEntryCount(), 50f, YAxis.AxisDependency.LEFT);
+        barChart.notifyDataSetChanged();
+        barChart.invalidate();
+    }
 
 
 
