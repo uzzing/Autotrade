@@ -94,9 +94,7 @@ public class Fragment_5minute extends Fragment {
                         BarChartData barChartData = eachSnapshot.getValue(BarChartData.class);
                         barList.add(new BarEntry(barChartData.getxValue(), barChartData.getyValue()));
                     }
-
                     initialize();
-
                 }
             }
             @Override
@@ -113,21 +111,15 @@ public class Fragment_5minute extends Fragment {
         barDataSet.setValueTextSize(13);
 
         barData = new BarData(barDataSet);
+        barData.setBarWidth(5f);
 
         barChart.setData(barData);
         barChart.setFitBars(true);
         barChart.getDescription().setText("");
-        barChart.setVisibleXRangeMinimum(6);
-        barChart.setVisibleXRangeMaximum(6);
         barChart.setVisibleXRange(0, 60);
-        barChart.animateY(2000);
+        barChart.animateY(1000);
         barChart.moveViewTo(barData.getEntryCount(), 50f, YAxis.AxisDependency.LEFT);
         barChart.notifyDataSetChanged();
         barChart.invalidate();
     }
-
-
-
-
-
 }

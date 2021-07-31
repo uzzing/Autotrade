@@ -100,7 +100,7 @@
             android:id="@+id/mywallet_line"
             android:layout_width="match_parent"
             android:layout_height="3px"
-            android:background="@color/blue_300" />
+            android:background="@color/gray" />
 
         <LinearLayout
             android:layout_width="match_parent"

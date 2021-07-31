@@ -11,6 +11,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.project.autotrade.chart.fragment.Fragment_5minute;
+import com.project.autotrade.trade.fragment.AutoTrade_5minute;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;

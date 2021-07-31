@@ -9,6 +9,9 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -123,7 +126,7 @@ public class AutoTrade_5minute extends Fragment {
             public void onClick(View v) {
                 backgroundTask = new BackgroundTask();
                 backgroundTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                fn_countdown();
+                Toast.makeText(getContext(), "Searching coins to buy", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -191,10 +194,13 @@ public class AutoTrade_5minute extends Fragment {
                     }
 
                     String finalCoinNm = getJson.getNewFinalCoin(tradePriceList);
-                    autoTrade.newAutoTradeFiveMinute(finalCoinNm);
 
-                    calculateProfitandSave(); // save data to firebase "Chart - 5 minutes"
-                    calculateSumOfProfit();
+                    Message msg = handler.obtainMessage();
+                    handler.sendMessage(msg);
+
+                    autoTrade.newAutoTradeFiveMinute(finalCoinNm);
+                    calculateProfitAndSave(); // save data to firebase "Chart - 5 minutes"
+                    calculateSumOfProfitAndSave(); // save data to firebase "Chart - sum of profits"
 
                     Thread.sleep(1000);
                 }
@@ -210,7 +216,6 @@ public class AutoTrade_5minute extends Fragment {
     private void getLastOf5minutesChartDB() {
 
         Query lastQuery = Chart5minutesRef.orderByKey().limitToLast(1); // get the last field
-
         lastQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
@@ -241,7 +246,7 @@ public class AutoTrade_5minute extends Fragment {
     }
 
 
-    public void calculateProfitandSave() throws IOException, NoSuchAlgorithmException, JSONException {
+    public void calculateProfitAndSave() throws IOException, NoSuchAlgorithmException, JSONException {
 
         // get buy price from json
         String buyData = getBuyOrderInfo();
@@ -351,14 +356,16 @@ public class AutoTrade_5minute extends Fragment {
      * 4. save data to "Sum of Profits" (x : minute, y : sum)
      * 5. get last field
      */
-    private void calculateSumOfProfit() {
+    private void calculateSumOfProfitAndSave() {
 
         try {
             Thread.sleep(100); // to get data safely
 
-            calculateSumsAndSaveIntoDB(); // save sum data to "sum or profit"
             getLastOf5minutesChartDB();
             getLastOfSumsChartDB(); // "Sum of profit" onDataChange -> receive data
+
+            Thread.sleep(100); // to get data safely
+            calculateSumsAndSaveIntoDB(); // save sum data to "sum or profit"
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -411,7 +418,7 @@ public class AutoTrade_5minute extends Fragment {
         ChartSumsRef.child(newKey).updateChildren(data);
     }
 
-    private void fn_countdown() {
+    public void fn_countdown() {
 
             myProgress = 0;
 
@@ -467,8 +474,5 @@ public class AutoTrade_5minute extends Fragment {
         progressBarView.setMax(endTime);
         progressBarView.setSecondaryProgress(endTime);
         progressBarView.setProgress(startTime);
-
     }
-
-
 }

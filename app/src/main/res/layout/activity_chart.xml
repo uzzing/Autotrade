@@ -25,33 +25,45 @@
             app:tint="@color/white"></ImageButton>
 
         <TextView
+            android:id="@+id/toolbar_chart_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TRADE CHART"
             android:textColor="@color/white"
             android:layout_gravity="center"
-            android:id="@+id/toolbar_chart_title"
-            android:textSize="17sp"
-            />
+            android:textSize="17sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <Spinner
-        android:id="@+id/chart_spinner"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    <RelativeLayout
+        android:id="@+id/chart_spinner_bar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@+id/toolbar_chart"
-        android:layout_marginTop="0dp"
-        android:background="@drawable/textview_border"
-        android:gravity="start"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar_chart">
+
+        <Spinner
+            android:id="@+id/chart_spinner"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/textview_border"
+            android:gravity="start"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="354dp"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/chart_spinner_triangle" />
+    </RelativeLayout>
 
     <FrameLayout
         android:id="@+id/chart_fragment"
-        android:layout_below="@+id/chart_spinner"
+        android:layout_below="@+id/chart_spinner_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></FrameLayout>
+        android:layout_height="match_parent"/>
 </RelativeLayout>
