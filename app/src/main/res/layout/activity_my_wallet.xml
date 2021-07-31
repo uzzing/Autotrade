@@ -133,18 +133,63 @@
                     android:orientation="vertical">
                 </ListView>
             </ScrollView>
-
         </LinearLayout>
     </LinearLayout>
 
-
     <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigation"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:menu="@menu/navigationmenu">
-    </com.google.android.material.navigation.NavigationView>
+            android:id="@+id/navigation"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            app:itemTextAppearance="@style/NavDrawerTextStyle"
+            app:menu="@menu/navigation_drawer">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom"
+            android:padding="17dp"
+            android:background="@color/blue_200">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/navi_header"
+                android:layout_marginLeft="7dp"
+                android:elevation="100dp">
+            </ImageView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Hello"
+                    android:textAlignment="center"
+                    android:textStyle="italic"
+                    android:textSize="17dp"
+                    android:textColor="@color/blue_700"
+                    android:elevation="10dp"
+                    tools:ignore="RtlCompat"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="AutoTrade World"
+                    android:textAlignment="center"
+                    android:textStyle="italic"
+                    android:textSize="20dp"
+                    android:textColor="@color/black"
+                    android:elevation="10dp"
+                    tools:ignore="RtlCompat"/>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -60,6 +61,9 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
     // recent trades
     private ScrollView scrollView;
     private ListView recentTradeListView;
+
+    // navigatio drawer
+    private TextView currentIDView;
 
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
@@ -255,6 +259,11 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         }
     }
 
+    private void sendUserToLoginActivity() {
+        Intent loginIntent = new Intent(MyWalletActivity.this, LoginActivity.class);
+        startActivity(loginIntent);
+    }
+
     /**
     the menu on the top right -> logout
      **/
@@ -271,26 +280,12 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
 
-//        if (item.getItemId() == R.id.mywallet_ordercoin) {
-//            Intent intent = new Intent(getApplicationContext(), TradeActivity.class);
-//            startActivity(intent);
-//        }
-
         if (item.getItemId() == R.id.mywallet_getcurrent) {
             Intent intent = new Intent(getApplicationContext(), GetCurrent.class);
             startActivity(intent);
         }
 
-        if (item.getItemId() == R.id.mywallet_logout_option) {
-            auth.signOut();
-            sendUserToLoginActivity();
-        }
         return true;
-    }
-
-    private void sendUserToLoginActivity() {
-        Intent loginIntent = new Intent(MyWalletActivity.this, com.project.autotrade.LoginActivity.class);
-        startActivity(loginIntent);
     }
 
 
@@ -313,7 +308,12 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.drawer_icon);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation);
+        View naviHeaderView = navigationView.inflateHeaderView(R.layout.navi_header);
+        naviHeaderView.findViewById(R.id.navi_header);
         navigationView.setNavigationItemSelectedListener(this);
+
+        currentIDView = naviHeaderView.findViewById(R.id.navi_currentUserId);
+        currentIDView.setText(currentUser.getEmail());
     }
 
     @Override
@@ -339,6 +339,11 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         if (menuItem.getItemId() == R.id.mypage) {
             Intent intent = new Intent(getApplicationContext(), MyPageActivity.class);
             startActivity(intent);
+        }
+
+        if (menuItem.getItemId() == R.id.mywallet_logout_option) {
+            auth.signOut();
+            sendUserToLoginActivity();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

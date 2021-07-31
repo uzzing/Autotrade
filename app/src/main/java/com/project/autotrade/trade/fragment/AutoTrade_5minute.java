@@ -195,8 +195,8 @@ public class AutoTrade_5minute extends Fragment {
 
                     String finalCoinNm = getJson.getNewFinalCoin(tradePriceList);
 
-                    Message msg = handler.obtainMessage();
-                    handler.sendMessage(msg);
+//                    Message msg = handler.obtainMessage();
+//                    handler.sendMessage(msg);
 
                     autoTrade.newAutoTradeFiveMinute(finalCoinNm);
                     calculateProfitAndSave(); // save data to firebase "Chart - 5 minutes"

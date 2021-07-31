@@ -27,9 +27,8 @@
         android:text="(ex.BTC, XRP)"
         android:textColor="@color/gray"
         android:textAlignment="center"
-        android:textSize="13dp">
+        android:textSize="13dp"/>
 
-    </TextView>
 
     <RelativeLayout
         android:layout_width="match_parent"

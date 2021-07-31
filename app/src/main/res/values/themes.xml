@@ -23,7 +23,10 @@
         <item name="android:progressDrawable">@drawable/drawable_circularprogressbar</item>
     </style>
 
-
+    <style name="NavDrawerTextStyle" parent="Base.TextAppearance.AppCompat">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
 
 
 

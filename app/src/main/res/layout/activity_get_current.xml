@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".trade.GetCurrent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/chat_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/blue_300">
+
+        <ImageButton
+            android:id="@+id/get_current_goback"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/chatroom_back"
+            android:background="@android:color/transparent"
+            android:layout_marginLeft="2dp"
+            android:scaleType="fitCenter"
+            app:tint="@color/white"/>
+
+        <TextView
+            android:id="@+id/get_current_toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GET CURRENT INFO"
+            android:layout_gravity="center"
+            android:textSize="17sp"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- search bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="20dp">
+
+        <EditText
+            android:id="@+id/get_current_edit_coinNm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:hint="  Enter Ticker Name  (ex.BTC, XRP)   " />
+
+
+        <Button
+            android:id="@+id/get_current_search"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="10dp"
+            android:text="search"
+            android:textSize="10dp"
+            android:textColor="@color/white"
+            android:background="@drawable/button_radius" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#F4F4F4"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="10dp">
+
+            <!-- 24h High  -->
+            <LinearLayout
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24h High"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/high_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
+
+            <!-- 24h Low -->
+            <LinearLayout
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_marginLeft="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24h Low"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/low_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="350dp"
+            android:layout_height="3px"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:background="@color/gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/black">
+
+            <!-- Open -->
+            <LinearLayout
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Open"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/opening_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
+
+            <!-- Close -->
+            <LinearLayout
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_marginLeft="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Close"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/trade_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
+
+            </LinearLayout>
+
+        <View
+            android:layout_width="350dp"
+            android:layout_height="3px"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:background="@color/gray" />
+
+        <!-- Close 1 day ago -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="10dp"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Close 1 day ago"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/prev_closing_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:textColor="@color/black"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="350dp"
+            android:layout_height="3px"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:background="@color/gray" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="10dp">
+
+
+            <!-- 24h trade amount -->
+            <LinearLayout
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24h Trade Amount"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/acc_trade_price_24h"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
+
+            <!-- 24h volume -->
+            <LinearLayout
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24h Trade Volume"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/acc_trade_volume_24h"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

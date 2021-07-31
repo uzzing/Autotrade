@@ -7,23 +7,19 @@
         android:icon="@drawable/menu_icon"
         android:title="dd"
         app:showAsAction="always">
+
         <menu>
 
             <item
-                android:title="OrderCoin"
-                android:id="@+id/mywallet_ordercoin"
-                app:showAsAction="never"
-                />
-            <item
-                android:title="GetCurrent"
+                android:title="GetCurrentPrice"
                 android:id="@+id/mywallet_getcurrent"
-                app:showAsAction="never"
-                />
+                app:showAsAction="never" />
+
             <item
                 android:title="Logout"
                 android:id="@+id/mywallet_logout_option"
-                app:showAsAction="never"
-                />
+                app:showAsAction="never" />
+
         </menu>
     </item>
 </menu>
