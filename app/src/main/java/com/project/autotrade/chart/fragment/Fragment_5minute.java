@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -116,10 +117,17 @@ public class Fragment_5minute extends Fragment {
         barChart.setData(barData);
         barChart.setFitBars(true);
         barChart.getDescription().setText("");
-        barChart.setVisibleXRange(0, 60);
+        barChart.setVisibleXRangeMaximum(6);
+//        barChart.setVisibleXRange(0, 20);
         barChart.animateY(1000);
         barChart.moveViewTo(barData.getEntryCount(), 50f, YAxis.AxisDependency.LEFT);
         barChart.notifyDataSetChanged();
         barChart.invalidate();
+
+        XAxis x = barChart.getXAxis();
+        x.setGranularityEnabled(false);
+        x.setAxisMaxValue(60);
+        x.setAxisMinValue(0);
+
     }
 }
