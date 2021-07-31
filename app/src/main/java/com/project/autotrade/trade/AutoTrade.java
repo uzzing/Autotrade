@@ -195,8 +195,8 @@ public class AutoTrade {
 
                     } // sell condition 5
 
-    /* if the balance is null because currency sold when it was condition2,
-   the balance become null and come here */
+                    /* if the balance is null because currency sold when it was condition2,
+                   the balance become null and come here */
                     Thread.sleep(1000); // take one second -> plue one second to now
 
                 } catch (NumberFormatException e) {

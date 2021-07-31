@@ -11,8 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
-import com.project.autotrade.chart.fragment.Fragment_1day;
-import com.project.autotrade.chart.fragment.Fragment_1hour;
 import com.project.autotrade.chart.fragment.Fragment_5minute;
 import com.project.autotrade.chart.fragment.Fragment_SumOfProfit;
 
@@ -25,8 +23,6 @@ public class ChartActivity extends AppCompatActivity {
     Spinner spinner;
     Fragment_5minute fragment_5minute;
     Fragment_SumOfProfit fragment_sumOfProfit;
-    Fragment_1hour fragment_1hour;
-    Fragment_1day fragment_1day;
 
     private ImageButton goBackToggle;
 
@@ -49,8 +45,6 @@ public class ChartActivity extends AppCompatActivity {
         spinner = findViewById(R.id.chart_spinner);
         fragment_sumOfProfit = new Fragment_SumOfProfit();
         fragment_5minute = new Fragment_5minute();
-        fragment_1hour = new Fragment_1hour();
-        fragment_1day = new Fragment_1day();
         goBackToggle = (ImageButton) findViewById(R.id.chart_goback);
         spinner();
     }
@@ -73,12 +67,6 @@ public class ChartActivity extends AppCompatActivity {
                     case 1 :
                         setFragment(fragment_5minute);
                         break;
-                    case 2 :
-                        setFragment(fragment_1hour);
-                        break;
-                    case 3 :
-                        setFragment(fragment_1day);
-                        break;
                 }
             }
 
@@ -88,9 +76,7 @@ public class ChartActivity extends AppCompatActivity {
             }
         });
 
-        // 드롭다운 클릭 시 선택 창
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // 스피너에 어댑터 설정
         spinner.setAdapter(adapter);
     }
 

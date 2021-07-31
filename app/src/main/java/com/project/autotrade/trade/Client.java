@@ -27,16 +27,20 @@ import com.auth0.jwt.algorithms.Algorithm;
 
 public class Client {
 
-    String accessKey = "8X1Qudp7NYxlsLHwS1Tj1jC1Kqjz3TY1SpkznKix";
-    String secretKey = "oQtMqvQxHr7xZJe8wFXcqbMboGcXxxjLDbYrnPkT";
+//    String accessKey = "8X1Qudp7NYxlsLHwS1Tj1jC1Kqjz3TY1SpkznKix";
+//    String secretKey = "oQtMqvQxHr7xZJe8wFXcqbMboGcXxxjLDbYrnPkT";
 
-//    private static String accessKey;
-//    private static String secretKey;
+    private static String accessKey;
+    private static String secretKey;
     private String serverUrl = "https://api.upbit.com";
 
     public void getKeys(String accessKey, String secretKey) {
-//        this.accessKey = accessKey;
-//        this.secretKey = secretKey;
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
+
+        System.out.println("on create in client");
+        System.out.println("access key : " + accessKey);
+        System.out.println("secret key : " + secretKey);
     }
 
     // change the name of method

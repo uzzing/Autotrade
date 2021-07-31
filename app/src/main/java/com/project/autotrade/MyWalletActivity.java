@@ -1,6 +1,8 @@
 package com.project.autotrade;
 
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,6 +14,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -33,6 +36,7 @@ import com.project.autotrade.mywallet.RecentTradeItem;
 import com.project.autotrade.trade.GetCurrent;
 import com.project.autotrade.trade.Client;
 import com.project.autotrade.trade.GetJson;
+import com.project.autotrade.trade.fragment.AutoTrade_5minute;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -72,12 +76,15 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
     // access key and secret key
     private DatabaseReference KeyRef;
     private String currentUserID;
+    private static String accesskey;
+    private static String secretkey;
 
     private String[] uuidArray;
     private ArrayList<RecentTradeItem> recentTradeItems = new ArrayList<>();
     private RecentTradeAdapter recentTradeAdapter;
 
     private ActionBarDrawerToggle toggle;
+
 
     public MyWalletActivity() { }
 
@@ -98,13 +105,30 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         KeyRef = FirebaseDatabase.getInstance().getReference().child(currentUserID).child("Keys");
 
         getKeysfromDB();
-        getUUIDfromDB();
         initializeFields();
 
+        updateData();
         // navigation drawer
         setUpNavigationDrawer();
-
     }
+
+
+//    private void thread() {
+//        Handler handler = new Handler(){
+//            @Override
+//            public void handleMessage(Message msg) {
+//                getBalance();
+//                getRecentTrade();
+//            }
+//        };
+//
+//        new Thread() {
+//            public void run() {
+//                Message msg = handler.obtainMessage();
+//                handler.sendMessage(msg);
+//            }
+//        }.start();
+//    }
 
     private void getKeysfromDB() {
 
@@ -113,24 +137,31 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
                 if (snapshot.exists()) {
-                    String key = snapshot.getKey();
-                    String accesskey = snapshot.child("Accesskey").getValue().toString();
-                    String secretkey = snapshot.child("Secretkey").getValue().toString();
+                    accesskey = snapshot.child("Accesskey").getValue().toString();
+                    secretkey = snapshot.child("Secretkey").getValue().toString();
 
                     new Client().getKeys(accesskey, secretkey);
+
                     getBalance();
+                    getRecentTrade();
+                }
+                else {
+                    sendUserToMyPageActivity();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
             }
         });
-
     }
 
-    private void getBalance() {
+    private void sendUserToMyPageActivity() {
+        Intent intent = new Intent(MyWalletActivity.this, MyPageActivity.class);
+        startActivity(intent);
+    }
+
+    public void getBalance() {
 
         Handler handler = new Handler() {
             public void handleMessage(Message msg) {
@@ -155,53 +186,7 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         }.start();
     }
 
-    private void initializeFields() {
-
-        // toolbar
-        toolbar = findViewById(R.id.toolbar_mywallet);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        // balance
-        balanceTextView = (TextView) findViewById(R.id.mywallet_balance);
-        balanceTextView.setText(strBalance);
-
-        // trade list
-        scrollView = (ScrollView) findViewById(R.id.scroll_view_recent_trade);
-        recentTradeAdapter = new RecentTradeAdapter(recentTradeItems);
-        recentTradeListView = (ListView) findViewById(R.id.recent_trade_listview);
-        recentTradeListView.setAdapter(recentTradeAdapter);
-    }
-
-    private void getUUIDfromDB() {
-
-        UUIDRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-
-                if (snapshot.exists()) {
-                    Iterator<DataSnapshot> iterator = snapshot.getChildren().iterator();
-
-                    int i = 0;
-                    uuidArray = new String[24];
-
-                    while (iterator.hasNext()) {
-                        uuidArray[i] = iterator.next().getValue().toString();
-                        i++;
-                    }
-
-                    getRecentTrade();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    private void getRecentTrade() {
+    public void getRecentTrade() {
 
         Handler handler = new Handler() {
             public void handleMessage(Message msg) {
@@ -245,7 +230,40 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
                 }
             }
         }.start();
+    }
 
+    private void updateData() {
+
+        UUIDRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                getBalance();
+                getRecentTrade();
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void initializeFields() {
+
+        // toolbar
+        toolbar = findViewById(R.id.toolbar_mywallet);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        // balance
+        balanceTextView = (TextView) findViewById(R.id.mywallet_balance);
+        balanceTextView.setText(strBalance);
+
+        // trade list
+        scrollView = (ScrollView) findViewById(R.id.scroll_view_recent_trade);
+        recentTradeAdapter = new RecentTradeAdapter(recentTradeItems);
+        recentTradeListView = (ListView) findViewById(R.id.recent_trade_listview);
+        recentTradeListView.setAdapter(recentTradeAdapter);
     }
 
     @Override
@@ -361,4 +379,32 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
             super.onBackPressed();
         }
     }
+
+//    private void getUUIDfromDB() {
+//
+//        UUIDRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+//
+//                if (snapshot.exists()) {
+//                    Iterator<DataSnapshot> iterator = snapshot.getChildren().iterator();
+//
+//                    int i = 0;
+//                    uuidArray = new String[24];
+//
+//                    while (iterator.hasNext()) {
+//                        uuidArray[i] = iterator.next().getValue().toString();
+//                        i++;
+//                    }
+//
+//                    getRecentTrade();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+//
+//            }
+//        });
+//    }
 }

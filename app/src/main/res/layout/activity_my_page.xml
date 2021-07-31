@@ -30,27 +30,25 @@
             android:textColor="@color/white"
             android:layout_gravity="center"
             android:id="@+id/toolbar_mypage_title"
-            android:textSize="17sp"
-            />
+            android:textSize="17sp" />
     </androidx.appcompat.widget.Toolbar>
 
     <ImageView
         android:id="@+id/mypage_image"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="190dp"
         android:src="@drawable/mypage_logo"
         android:layout_alignParentStart="true"
         android:scaleType="fitCenter"
-        android:layout_marginTop="100dp"
-        app:tint="@color/black"
-        />
+        android:layout_marginTop="115dp"
+        app:tint="@color/black" />
 
     <TextView
         android:id="@+id/mypage_accesskey"
         android:layout_width="match_parent"
         android:layout_height="40sp"
         android:layout_below="@+id/toolbar_mypage"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="240dp"
         android:gravity="center"
         android:text="Access Key"
         android:textColor="@color/black"
@@ -61,8 +59,8 @@
 
     <EditText
         android:id="@+id/edittext_accesskey"
-        android:layout_width="350dp"
-        android:layout_height="35dp"
+        android:layout_width="330dp"
+        android:layout_height="40dp"
         android:layout_below="@+id/mypage_accesskey"
         android:layout_alignParentStart="true"
         android:layout_marginStart="30dp"
@@ -81,18 +79,18 @@
         android:layout_marginTop="13dp"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:textStyle="bold"></TextView>
+        android:textStyle="bold"/>
 
     <EditText
         android:id="@+id/edittext_secretkey"
-        android:layout_width="350dp"
-        android:layout_height="35dp"
+        android:layout_width="330dp"
+        android:layout_height="40dp"
         android:layout_below="@+id/mypage_secretkey"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="31dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="13dp"
         android:background="@drawable/edittext_border"
-        android:textSize="17sp"></EditText>
+        android:textSize="17sp"/>
 
     <Button
         android:id="@+id/mypage_button"
@@ -100,24 +98,22 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/edittext_secretkey"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="157dp"
+        android:layout_marginStart="150dp"
         android:text="SAVE"
         android:textColor="@color/white"
         android:background="@drawable/button_radius"
-        android:layout_marginTop="45dp"
-        ></Button>
+        android:layout_marginTop="45dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="For trading cyrpto in upbit\n
+        android:text="For trading cyrpto in upbit,\n
 you must input your access key and secret key here.\n
-You can receive those keys in upbit developer site.
-"
+You can receive those keys in upbit developer site."
         android:layout_below="@+id/mypage_button"
         android:textAlignment="center"
         android:textColor="@color/gray"
-        android:layout_marginTop="30dp"
-        ></TextView>
+        android:textStyle="italic"
+        android:layout_marginTop="30dp" />
 
 </RelativeLayout>

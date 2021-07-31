@@ -8,7 +8,7 @@
     android:id="@+id/navi_header"
     android:layout_marginTop="25dp"
     android:padding="20dp"
-    android:background="#EAEAEA">
+    android:background="#F3F3F3">
 
     <ImageView
         android:layout_width="60dp"

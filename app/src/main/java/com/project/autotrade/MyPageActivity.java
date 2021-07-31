@@ -67,10 +67,12 @@ public class MyPageActivity extends AppCompatActivity {
                 hashMap.put("Secretkey", Secretkey);
                 keyRef.setValue(hashMap);
 
-                Toast.makeText(getApplicationContext(),"Saved AccessKey and SecretKey", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Saved successfully", Toast.LENGTH_SHORT).show();
 
                 EditText_AccessKey.setText("");
                 EditText_SecretKey.setText("");
+
+                finish();
             }
 
         });
