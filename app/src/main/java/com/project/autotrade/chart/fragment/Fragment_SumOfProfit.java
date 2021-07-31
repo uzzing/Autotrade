@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -134,10 +135,22 @@ public class Fragment_SumOfProfit extends Fragment {
         barChart.setData(barData);
         barChart.setFitBars(true);
         barChart.getDescription().setText("");
-        barChart.setVisibleXRange(0, 60);
+        barChart.setVisibleXRangeMaximum(6);
+//        barChart.setVisibleXRange(0, 60);
         barChart.animateY(1000);
         barChart.moveViewTo(barData.getEntryCount(), 50f, YAxis.AxisDependency.LEFT);
         barChart.notifyDataSetChanged();
         barChart.invalidate();
+        barChart.getXAxis().setTextSize(11);
+        barChart.getXAxis().setTextColor(Color.BLUE);
+        barChart.getAxisLeft().setTextColor(getResources().getColor(R.color.blue_700));
+        barChart.getAxisRight().setTextColor(getResources().getColor(R.color.blue_700));
+        barChart.getAxisLeft().setTextSize(13);
+        barChart.getAxisRight().setTextSize(13);
+        barChart.getRendererLeftYAxis();
+
+        XAxis x = barChart.getXAxis();
+        x.setAxisMaxValue(60);
+        x.setAxisMinValue(0);
     }
 }

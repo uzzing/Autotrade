@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import cz.msebera.android.httpclient.util.EntityUtils;
 
@@ -90,6 +91,10 @@ public class AutoTrade_5minute extends Fragment {
     // in "Sum of 5 minute's profit"
     private int lastKeyofSumDB;
     private float lastSumofSumDB;
+
+    private String[] chartArray;
+    private String[] chartKeys;
+    private int minute;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -135,6 +140,7 @@ public class AutoTrade_5minute extends Fragment {
             public void onClick(View v) {
                 countDownTimer.cancel();
                 tv_time.setText("00:00:00");
+                backgroundTask.cancel(true);
             }
         });
 
@@ -178,6 +184,14 @@ public class AutoTrade_5minute extends Fragment {
         @Override
         protected void onCancelled() { }
     }
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            fn_countdown();
+
+        }
+    };
 
     // Thread that used in BackgroundTask4.class
     class NewAutoTradeFiveMinuteThread implements Runnable {
@@ -243,7 +257,7 @@ public class AutoTrade_5minute extends Fragment {
 
             }
         });
-    }
+  }
 
 
     public void calculateProfitAndSave() throws IOException, NoSuchAlgorithmException, JSONException {
@@ -295,7 +309,7 @@ public class AutoTrade_5minute extends Fragment {
     private void saveResultToDB(float profit) throws JSONException, NoSuchAlgorithmException, IOException {
 
         // get minute
-        int minute = Calendar.getInstance().get(Calendar.MINUTE);
+        minute = Calendar.getInstance().get(Calendar.MINUTE);
 
         // get profit
         float profitForChart = Float.parseFloat(profit + "f");

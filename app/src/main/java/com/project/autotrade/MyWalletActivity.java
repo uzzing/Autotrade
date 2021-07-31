@@ -86,7 +86,7 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
         currentUserID = Arrays.stream(auth.getCurrentUser().getEmail().split("@")).findFirst().get();
-
+//
         // UUID
         UUIDRef = FirebaseDatabase.getInstance().getReference().child(currentUserID).child("UUID");
 

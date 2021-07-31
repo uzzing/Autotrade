@@ -8,6 +8,8 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -107,6 +109,7 @@ public class AutoTrade_1day extends Fragment {
             public void onClick(View v) {
                 countDownTimer.cancel();
                 tv_time.setText("00:00:00");
+                backgroundTask.cancel(true);
             }
         });
 
@@ -117,6 +120,13 @@ public class AutoTrade_1day extends Fragment {
         return view;
     }
 
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            fn_countdown();
+
+        }
+    };
 
     class BackgroundTask extends AsyncTask<Integer, String, Integer> {
 
@@ -132,6 +142,9 @@ public class AutoTrade_1day extends Fragment {
                 getTickerData(coinNm);
 
                 Thread.sleep(1000);
+
+                Message msg = handler.obtainMessage();
+                handler.sendMessage(msg);
 
                 AutoTradeOneDayThread autoTradeOneDayThread = new AutoTradeOneDayThread();
                 autoTradeOneDayThread.run();
