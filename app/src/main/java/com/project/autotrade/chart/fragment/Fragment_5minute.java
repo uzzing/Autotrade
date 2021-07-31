@@ -76,7 +76,7 @@ public class Fragment_5minute extends Fragment {
         barChart = (BarChart) view.findViewById(R.id.bar_chart_5minute);
 
         currentUserID = Arrays.stream(FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")).findFirst().get();
-        ChartRef = FirebaseDatabase.getInstance().getReference().child("5 minutes chart").child(currentUserID);
+        ChartRef = FirebaseDatabase.getInstance().getReference().child(currentUserID).child("Chart - 5 minutes");
 
         retrieveData();
 
@@ -94,7 +94,9 @@ public class Fragment_5minute extends Fragment {
                         BarChartData barChartData = eachSnapshot.getValue(BarChartData.class);
                         barList.add(new BarEntry(barChartData.getxValue(), barChartData.getyValue()));
                     }
+
                     initialize();
+
                 }
             }
             @Override
@@ -102,14 +104,19 @@ public class Fragment_5minute extends Fragment {
             }
         });
     }
+
     private void initialize() {
+
         barDataSet = new BarDataSet(barList, "5 minutes");
         barDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
         barDataSet.setValueTextColor(Color.RED);
         barDataSet.setValueTextSize(13);
+
         barData = new BarData(barDataSet);
+
         barChart.setData(barData);
         barChart.setFitBars(true);
+        barChart.getDescription().setText("");
         barChart.setVisibleXRangeMinimum(6);
         barChart.setVisibleXRangeMaximum(6);
         barChart.setVisibleXRange(0, 60);

@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +30,7 @@ import com.project.autotrade.chart.model.BarChartData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Fragment_SumOfProfit extends Fragment {
@@ -41,16 +43,21 @@ public class Fragment_SumOfProfit extends Fragment {
     private static BarDataSet barDataSet = new BarDataSet(barList, "sum of 5 minutes profit");
     private static BarData barData = new BarData(barDataSet);
 
-    private static final Object TAG = null;
-    private static float sumOfProfit;
-    private static FirebaseDatabase firebaseDatabase;
-    private static DatabaseReference chartRef;
-    private static DatabaseReference chart5minutesRef;
-    private static DatabaseReference lastRef;
+    private final Object TAG = null;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference chartSumsRef;
+    private DatabaseReference chart5minutesRef;
+    private DatabaseReference lastRef;
+    private String currentUserID;
 
-    private static int[] lastXofDB = new int[1];
-    private static float[] lastYofDB = new float[1];
-    private static Integer countOfDB = 0;
+    // in "Profits per 5 minutes"
+    private int lastXofDB;
+    private float lastYofDB;
+
+    // in "Sum of 5 minute's profit"
+    private int lastKeyofDB;
+    private float lastSumofDB;
+//    private Integer countOfDB = 0;
 
     @Override
     public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -64,10 +71,11 @@ public class Fragment_SumOfProfit extends Fragment {
         view = inflater.inflate(R.layout.fragment_sum_of_profit, container, false);
 
         barChart = (BarChart) view.findViewById(R.id.bar_chart_sum_of_profit);
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        chartRef = firebaseDatabase.getReference().child("Sum of 5 minute's profit");
-        chart5minutesRef = firebaseDatabase.getReference().child("Profit per 5 minutes");
 
+        currentUserID = Arrays.stream(FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")).findFirst().get();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        chartSumsRef = firebaseDatabase.getReference().child(currentUserID).child("Chart - Sum of profit");
+        chart5minutesRef = firebaseDatabase.getReference().child(currentUserID).child("Chart - 5 minutes");
 
         retrieveData();
 
@@ -75,19 +83,22 @@ public class Fragment_SumOfProfit extends Fragment {
         return view;
     }
 
-    public void calculateSumOfProfit() {
+    // get data from firebase
+    private void retrieveData() {
 
-        Query lastQuery = lastRef.orderByKey().limitToLast(1);
-        lastQuery.addValueEventListener(new ValueEventListener() {
+        chartSumsRef.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                for (DataSnapshot lastChild : snapshot.getChildren()) {
-                    lastXofDB[0] = Integer.parseInt(lastChild.getKey());
-                    lastYofDB[0] = lastChild.getValue(BarChartData.class).getyValue();
+                if (snapshot.exists()) {
+                    for (DataSnapshot eachSnapshot : snapshot.getChildren()) {
+                        BarChartData barChartData = eachSnapshot.getValue(BarChartData.class);
+                        barList.add(new BarEntry(barChartData.getxValue(), barChartData.getyValue()));
+                    }
 
-                    System.out.println("lastKeyofDB : " + lastXofDB[0]);
-                    System.out.println("lastYofDB : " + lastYofDB[0]);
+                    initialize();
+
                 }
             }
 
@@ -96,61 +107,27 @@ public class Fragment_SumOfProfit extends Fragment {
 
             }
         });
-
-        System.out.println("lastKeyofDB : " + lastXofDB[0]);
-        System.out.println("lastYofDB : " + lastYofDB[0]);
-
-        System.out.println("Fragment_5minute.lastY : " + Fragment_5minute.lastY);
-        lastYofDB[0] += Fragment_5minute.lastY;
-
-        insertData(lastXofDB[0], Fragment_5minute.lastX, lastYofDB[0]);
-
     }
 
-    // save data to firebase
-    private void insertData(int key, int minute, float sumOfProfit) {
-        //String id = chartRef.child(String.valueOf(countOfDB++)).setValue();
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("xValue", minute);
-        data.put("yValue", sumOfProfit);
-        //chartRef.child(id).updateChildren(data);
-        chartRef.child(String.valueOf(++key)).updateChildren(data);
-    }
+    private void initialize() {
 
-    // get data from firebase
-    private void retrieveData() {
-        System.out.println("(Fragment_5minute)retrieveData");
+        barDataSet = new BarDataSet(barList, "sum of 5 minutes profit");
+        barDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        barDataSet.setValueTextColor(Color.RED);
+        barDataSet.setValueTextSize(13);
 
-        chartRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+        barData = new BarData(barDataSet);
 
-//                if (snapshot.getValue(BarChartData.class) != null) {
-                    for (DataSnapshot eachSnapshot : snapshot.getChildren()) {
-                        BarChartData barChartData = eachSnapshot.getValue(BarChartData.class);
-                        barList.add(new BarEntry(barChartData.getxValue(), barChartData.getyValue()));
-                    }
-
-                    barDataSet.notifyDataSetChanged();
-                    barData.notifyDataChanged();
-                    barChart.setData(barData);
-                    barChart.notifyDataSetChanged();
-                    barChart.setVisibleXRangeMinimum(6);
-                    barChart.setVisibleXRangeMaximum(6);
-                    barChart.setVisibleXRange(0, 60);
-                    System.out.println("(Fragment_SumOfProfit)barList1: " + barList);
-
-//                } else {
-//                    barChart1.clear();
-//                    barChart1.invalidate();
-//                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
-            }
-        });
+        barChart.setData(barData);
+        barChart.setFitBars(true);
+        barChart.getDescription().setText("");
+        barChart.setVisibleXRangeMinimum(6);
+        barChart.setVisibleXRangeMaximum(6);
+        barChart.setVisibleXRange(0, 60);
+        barChart.animateY(2000);
+        barChart.moveViewTo(barData.getEntryCount(), 50f, YAxis.AxisDependency.LEFT);
+        barChart.notifyDataSetChanged();
+        barChart.invalidate();
     }
 }
 

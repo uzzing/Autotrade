@@ -22,10 +22,16 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.project.autotrade.R;
 import com.project.autotrade.chart.fragment.Fragment_5minute;
+import com.project.autotrade.chart.model.BarChartData;
 import com.project.autotrade.trade.AutoTrade;
 import com.project.autotrade.trade.Client;
 import com.project.autotrade.trade.GetJson;
@@ -38,6 +44,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -57,6 +64,7 @@ public class AutoTrade_5minute extends Fragment {
     CountDownTimer countDownTimer;
     int endTime = 300;
 
+    // thread
     private static final String TAG = "Main";
     private static BackgroundTask backgroundTask;
     private RequestQueue requestQueue;
@@ -67,7 +75,18 @@ public class AutoTrade_5minute extends Fragment {
     private AutoTrade autoTrade = new AutoTrade();
     private static ArrayList<HashMap<String, String>> tradePriceList;
 
-    private static DatabaseReference ChartRef;
+    // save data to firebase
+    private static DatabaseReference Chart5minutesRef, ChartSumsRef;
+    private static String currentUserID;
+
+    // in "Profits per 5 minutes"
+    private int lastKeyof5DB;
+    private int lastXof5DB;
+    private float lastYof5DB;
+
+    // in "Sum of 5 minute's profit"
+    private int lastKeyofSumDB;
+    private float lastSumofSumDB;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,6 +111,12 @@ public class AutoTrade_5minute extends Fragment {
         progressBarView.setSecondaryProgress(endTime);
         progressBarView.setProgress(0);
 
+        currentUserID = Arrays.stream(FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")).findFirst().get();
+        Chart5minutesRef = FirebaseDatabase.getInstance().getReference().child(currentUserID).child("Chart - 5 minutes");
+        ChartSumsRef = FirebaseDatabase.getInstance().getReference().child(currentUserID).child("Chart - Sum of profit");
+
+        getLastOf5minutesChartDB();
+        getLastOfSumsChartDB();
 
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +140,39 @@ public class AutoTrade_5minute extends Fragment {
         }
 
         return view;
+    }
+
+    private void getLastOf5minutesChartDB() {
+
+        Query lastQuery = Chart5minutesRef.orderByKey().limitToLast(1); // get the last field
+
+        lastQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+
+                if (snapshot.exists()) {
+                    for (DataSnapshot lastChild : snapshot.getChildren()) {
+                        lastKeyof5DB = Integer.parseInt(lastChild.getKey());
+                        lastXof5DB = lastChild.getValue(BarChartData.class).getxValue();
+                        lastYof5DB = lastChild.getValue(BarChartData.class).getyValue();
+                    }
+                }
+                else { // initialize
+                    lastKeyof5DB = 0;
+                }
+
+                System.out.println("getLastKeyOf5minutesChart");
+                System.out.println("lastKeyof5DB : " + lastKeyof5DB);
+                System.out.println("lastXof5DB : " + lastXof5DB);
+                System.out.println("lastYof5DB : " + lastYof5DB);
+                System.out.println();
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
     }
 
     class BackgroundTask extends AsyncTask<Integer, String, Integer> {
@@ -156,7 +214,6 @@ public class AutoTrade_5minute extends Fragment {
 
         @Override
         public void run() {
-
             try {
                 while (true) {
                     tradePriceList = new ArrayList<>();
@@ -168,8 +225,9 @@ public class AutoTrade_5minute extends Fragment {
 
                     String finalCoinNm = getJson.getNewFinalCoin(tradePriceList);
                     autoTrade.newAutoTradeFiveMinute(finalCoinNm);
-                    calculateProfit();
-//                    Fragment_SumOfProfit.calculateSumOfProfit();
+
+                    calculateProfitandSave(); // save data to firebase "Chart - 5 minutes"
+                    calculateSumOfProfit();
 
                     Thread.sleep(1000);
                 }
@@ -182,7 +240,7 @@ public class AutoTrade_5minute extends Fragment {
     /**
      to save trade result to firebase for chart
      */
-    public void calculateProfit() throws IOException, NoSuchAlgorithmException, JSONException {
+    public void calculateProfitandSave() throws IOException, NoSuchAlgorithmException, JSONException {
 
         // get buy price from json
         String buyData = getBuyOrderInfo();
@@ -230,8 +288,6 @@ public class AutoTrade_5minute extends Fragment {
     // save trade result to firebase
     private void saveResultToDB(float profit) throws JSONException, NoSuchAlgorithmException, IOException {
 
-        ChartRef = FirebaseDatabase.getInstance().getReference().child("Profits per 5 minutes");
-
         // get minute
         int minute = Calendar.getInstance().get(Calendar.MINUTE);
 
@@ -239,12 +295,12 @@ public class AutoTrade_5minute extends Fragment {
         float profitForChart = Float.parseFloat(profit + "f");
 
         // insert data to firebase
-        String id = ChartRef.push().getKey();
         HashMap<String, Object> data = new HashMap<>();
         data.put("xValue", minute);
         data.put("yValue", profitForChart);
 
-        ChartRef.child(id).updateChildren(data);
+        String newKey = String.valueOf(++lastKeyof5DB);
+        Chart5minutesRef.child(newKey).updateChildren(data);
     }
 
 
@@ -286,6 +342,73 @@ public class AutoTrade_5minute extends Fragment {
         return data;
     }
 
+
+    /** when data is added to "Profits per 5 minutes"
+     * 1. get last field from "Profits per 5 minutes"
+     * 2. get last field from "Sum of Profits"
+     * 3. plus that to 2
+     * 4. save data to "Sum of Profits" (x : minute, y : sum)
+     * 5. get last field
+     */
+    private void calculateSumOfProfit() {
+
+        try {
+            Thread.sleep(100); // to get data safely
+
+            calculateSumsAndSaveIntoDB(); // save sum data to "sum or profit"
+            getLastOf5minutesChartDB();
+            getLastOfSumsChartDB(); // "Sum of profit" onDataChange -> receive data
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getLastOfSumsChartDB() {
+
+        Query lastQuery = ChartSumsRef.orderByKey().limitToLast(1);
+        lastQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+
+                if (snapshot.exists()) {
+                    for (DataSnapshot lastChild : snapshot.getChildren()) {
+                        lastKeyofSumDB = Integer.parseInt(lastChild.getKey());
+                        lastSumofSumDB = lastChild.getValue(BarChartData.class).getyValue();
+
+                        System.out.println("getLastOfSumsChartDB");
+                        System.out.println("lastKeyofSumDB : " + lastKeyofSumDB);
+                        System.out.println("lastSumofSumDB : " + lastSumofSumDB);
+                        System.out.println();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+            }
+        });
+    }
+
+    // if save data, onDataChange is executed again,,,,, -> update chart ui
+    private void calculateSumsAndSaveIntoDB() {
+
+        System.out.println("calculateSumsAndSaveIntoDB");
+        System.out.println("lastXof5DB : " + lastXof5DB);
+        System.out.println("lastYof5DB : " + lastYof5DB);
+        System.out.println("lastKeyofSumDB : " + lastKeyofSumDB);
+        System.out.println("lastSumofSumDB : " + lastSumofSumDB);
+        System.out.println();
+
+        lastSumofSumDB += lastYof5DB;
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("xValue", lastXof5DB);
+        data.put("yValue", lastSumofSumDB);
+
+        String newKey = String.valueOf(++lastKeyofSumDB);
+        ChartSumsRef.child(newKey).updateChildren(data);
+    }
 
     private void fn_countdown() {
 

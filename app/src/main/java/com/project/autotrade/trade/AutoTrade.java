@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
@@ -39,9 +40,11 @@ public class AutoTrade {
     public static String sellUUID;
 
     private DatabaseReference UUIDRef;
+    private String currentUserID;
 
     private void sendBuyUUIDToDB(String date, String uuid) {
-        UUIDRef = FirebaseDatabase.getInstance().getReference().child("UUID").child(date);
+        currentUserID = Arrays.stream(FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")).findFirst().get();
+        UUIDRef = FirebaseDatabase.getInstance().getReference().child(currentUserID).child("UUID").child(date);
         UUIDRef.setValue(uuid);
     }
 

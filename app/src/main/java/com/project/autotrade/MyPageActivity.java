@@ -49,7 +49,7 @@ public class MyPageActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         currentUserID = Arrays.stream(auth.getCurrentUser().getEmail().split("@")).findFirst().get();
-        keyRef = FirebaseDatabase.getInstance().getReference().child("Keys").child(currentUserID);
+        keyRef = FirebaseDatabase.getInstance().getReference().child(currentUserID).child("Keys");
 
         initializeFields();
 
@@ -57,6 +57,7 @@ public class MyPageActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        // save data to firebase
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,8 +69,8 @@ public class MyPageActivity extends AppCompatActivity {
 
                 Toast.makeText(getApplicationContext(),"Saved AccessKey and SecretKey", Toast.LENGTH_SHORT).show();
 
-                EditText_AccessKey.setText(null);
-                EditText_SecretKey.setText(null);
+                EditText_AccessKey.setText("");
+                EditText_SecretKey.setText("");
             }
 
         });

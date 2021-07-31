@@ -85,12 +85,13 @@ public class MyWalletActivity extends AppCompatActivity implements NavigationVie
         // get account data
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
-        UUIDRef = FirebaseDatabase.getInstance().getReference().child("UUID");
-
-
-        // get access key and secret key
         currentUserID = Arrays.stream(auth.getCurrentUser().getEmail().split("@")).findFirst().get();
-        KeyRef = FirebaseDatabase.getInstance().getReference().child("Keys").child(currentUserID);
+
+        // UUID
+        UUIDRef = FirebaseDatabase.getInstance().getReference().child(currentUserID).child("UUID");
+
+        // access key and secret key
+        KeyRef = FirebaseDatabase.getInstance().getReference().child(currentUserID).child("Keys");
 
         getKeysfromDB();
         getUUIDfromDB();
