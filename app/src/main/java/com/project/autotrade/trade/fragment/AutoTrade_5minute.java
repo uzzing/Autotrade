@@ -142,39 +142,6 @@ public class AutoTrade_5minute extends Fragment {
         return view;
     }
 
-    private void getLastOf5minutesChartDB() {
-
-        Query lastQuery = Chart5minutesRef.orderByKey().limitToLast(1); // get the last field
-
-        lastQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-
-                if (snapshot.exists()) {
-                    for (DataSnapshot lastChild : snapshot.getChildren()) {
-                        lastKeyof5DB = Integer.parseInt(lastChild.getKey());
-                        lastXof5DB = lastChild.getValue(BarChartData.class).getxValue();
-                        lastYof5DB = lastChild.getValue(BarChartData.class).getyValue();
-                    }
-                }
-                else { // initialize
-                    lastKeyof5DB = 0;
-                }
-
-                System.out.println("getLastKeyOf5minutesChart");
-                System.out.println("lastKeyof5DB : " + lastKeyof5DB);
-                System.out.println("lastXof5DB : " + lastXof5DB);
-                System.out.println("lastYof5DB : " + lastYof5DB);
-                System.out.println();
-            }
-
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
-            }
-        });
-    }
-
     class BackgroundTask extends AsyncTask<Integer, String, Integer> {
 
         @Override
@@ -240,6 +207,40 @@ public class AutoTrade_5minute extends Fragment {
     /**
      to save trade result to firebase for chart
      */
+    private void getLastOf5minutesChartDB() {
+
+        Query lastQuery = Chart5minutesRef.orderByKey().limitToLast(1); // get the last field
+
+        lastQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+
+                if (snapshot.exists()) {
+                    for (DataSnapshot lastChild : snapshot.getChildren()) {
+                        lastKeyof5DB = Integer.parseInt(lastChild.getKey());
+                        lastXof5DB = lastChild.getValue(BarChartData.class).getxValue();
+                        lastYof5DB = lastChild.getValue(BarChartData.class).getyValue();
+                    }
+                }
+                else { // initialize
+                    lastKeyof5DB = 0;
+                }
+
+                System.out.println("getLastKeyOf5minutesChart");
+                System.out.println("lastKeyof5DB : " + lastKeyof5DB);
+                System.out.println("lastXof5DB : " + lastXof5DB);
+                System.out.println("lastYof5DB : " + lastYof5DB);
+                System.out.println();
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
     public void calculateProfitandSave() throws IOException, NoSuchAlgorithmException, JSONException {
 
         // get buy price from json
