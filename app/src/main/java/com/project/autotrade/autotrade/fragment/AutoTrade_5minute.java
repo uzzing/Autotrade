@@ -1,4 +1,4 @@
-package com.project.autotrade.trade.fragment;
+package com.project.autotrade.autotrade.fragment;
 
 import android.os.AsyncTask;
 import android.os.Build;
@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +22,6 @@ import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,11 +30,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.project.autotrade.R;
-import com.project.autotrade.chart.fragment.Fragment_5minute;
 import com.project.autotrade.chart.model.BarChartData;
-import com.project.autotrade.trade.AutoTrade;
-import com.project.autotrade.trade.Client;
-import com.project.autotrade.trade.GetJson;
+import com.project.autotrade.autotrade.AutoTrade;
+import com.project.autotrade.autotrade.Client;
+import com.project.autotrade.autotrade.GetJson;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -50,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import cz.msebera.android.httpclient.util.EntityUtils;
 

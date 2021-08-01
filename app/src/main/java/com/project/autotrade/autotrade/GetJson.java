@@ -1,4 +1,4 @@
-package com.project.autotrade.trade;
+package com.project.autotrade.autotrade;
 
 import android.util.Log;
 

@@ -32,9 +32,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.project.autotrade.trade.fragment.AutoTrade_1day;
-import com.project.autotrade.trade.fragment.AutoTrade_1minute;
-import com.project.autotrade.trade.fragment.AutoTrade_5minute;
+import com.project.autotrade.autotrade.fragment.AutoTrade_1day;
+import com.project.autotrade.autotrade.fragment.AutoTrade_1minute;
+import com.project.autotrade.autotrade.fragment.AutoTrade_5minute;
 
 public class AutoTradeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 

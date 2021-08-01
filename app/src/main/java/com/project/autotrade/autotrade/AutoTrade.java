@@ -1,27 +1,16 @@
-package com.project.autotrade.trade;
+package com.project.autotrade.autotrade;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.github.mikephil.charting.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.project.autotrade.chart.fragment.Fragment_5minute;
-import com.project.autotrade.trade.fragment.AutoTrade_5minute;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
-import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -29,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.UUID;
 
 import cz.msebera.android.httpclient.util.EntityUtils;
 

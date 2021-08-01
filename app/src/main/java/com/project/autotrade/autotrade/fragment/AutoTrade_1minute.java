@@ -1,4 +1,4 @@
-package com.project.autotrade.trade.fragment;
+package com.project.autotrade.autotrade.fragment;
 
 import android.os.AsyncTask;
 import android.os.Build;
@@ -26,8 +26,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.project.autotrade.R;
-import com.project.autotrade.trade.AutoTrade;
-import com.project.autotrade.trade.GetJson;
+import com.project.autotrade.autotrade.AutoTrade;
+import com.project.autotrade.autotrade.GetJson;
 
 import org.json.JSONException;
 

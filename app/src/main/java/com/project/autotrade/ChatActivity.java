@@ -148,11 +148,6 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
 
-        if (item.getItemId() == R.id.main_logout_option) {
-            auth.signOut();
-            sendUserToLoginActivity();
-        }
-
         if (item.getItemId() == R.id.main_create_group_option) {
             requestNewGroupChat();
         }

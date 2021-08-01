@@ -15,11 +15,6 @@
                 android:id="@+id/mywallet_getcurrent"
                 app:showAsAction="never" />
 
-            <item
-                android:title="Logout"
-                android:id="@+id/mywallet_logout_option"
-                app:showAsAction="never" />
-
         </menu>
     </item>
 </menu>

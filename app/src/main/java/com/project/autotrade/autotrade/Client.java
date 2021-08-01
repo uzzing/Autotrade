@@ -1,9 +1,8 @@
-package com.project.autotrade.trade;
+package com.project.autotrade.autotrade;
 
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

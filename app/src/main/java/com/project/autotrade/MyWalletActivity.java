@@ -1,8 +1,6 @@
 package com.project.autotrade;
 
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,7 +12,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -33,10 +30,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.autotrade.chat.model_message.MyData;
 import com.project.autotrade.mywallet.RecentTradeAdapter;
 import com.project.autotrade.mywallet.RecentTradeItem;
-import com.project.autotrade.trade.GetCurrent;
-import com.project.autotrade.trade.Client;
-import com.project.autotrade.trade.GetJson;
-import com.project.autotrade.trade.fragment.AutoTrade_5minute;
+import com.project.autotrade.autotrade.GetCurrent;
+import com.project.autotrade.autotrade.Client;
+import com.project.autotrade.autotrade.GetJson;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -49,7 +45,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import cz.msebera.android.httpclient.util.EntityUtils;
 
